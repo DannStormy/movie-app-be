@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 
+import Helper from '../utils/helpers/helpers';
 import userSchema from "../validations/userSchema";
 import UserService from "../services/userService"
 
@@ -67,6 +68,7 @@ export default class UserMiddleware {
             return error
         }
     }
+    
     /**
      * find user in users table 
      * @static
@@ -75,15 +77,14 @@ export default class UserMiddleware {
      * @param {Next} next - The function that calls the next handler.
      * @returns { JSON } - Returns message
      */
-
     static async checkUserDetails(req, res, next) {
         try {
-            const { email } = req.body;
+            const { email, password } = req.body;
             const user = await getUserByEmail(email);
             if (!user) {
                 return res.status(409).json({ status: 'conflict', message: 'user does not exist' })
-            }
-            const passwordMatch = bcrypt.compareSync(req.body.password, user.password);
+            }            
+            const passwordMatch = await Helper.comparePasswordHash(password, user.password);
             if (!passwordMatch) {
                 return res.status(403).json({ status: 'forbidden', message: 'wrong password' })
             }

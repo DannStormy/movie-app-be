@@ -1,6 +1,5 @@
-import bcrypt from 'bcrypt';
-
 import db from "../config/config";
+import Helper from '../utils/helpers/helpers';
 import user_queries from "../queries/user_queries";
 
 const { registerUser, loginUser, findUserByEmail } = user_queries;
@@ -12,7 +11,7 @@ export default class UserService {
      */
     static async addUser(data) {
         let { firstName, lastName, email, password } = data;
-        password = bcrypt.hashSync(password, 10);
+        password = await Helper.generatePasswordHash(password)
         return db.none(registerUser, [firstName, lastName, email, password]);
     }
 

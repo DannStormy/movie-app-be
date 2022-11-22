@@ -1,28 +1,18 @@
 import Joi from "joi";
 
+import ValidationHelper from "../utils/helpers/validations";
+
+const { emailCheck, passwordCheck, stringCheck } = ValidationHelper;
+
 export default {
   registerSchema: Joi.object({
-    firstName: Joi.string()
-      .min(1)
-      .required(),
-    lastName: Joi.string()
-      .min(1)
-      .required(),
-    email: Joi.string()
-      .email()
-      .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-      .required(),
-    password: Joi.string()
-      .min(4)
-      .required()
+    firstName: stringCheck('firstName'),
+    lastName: stringCheck('lastName'),
+    email: emailCheck(),
+    password: passwordCheck()
   }),
   loginSchema: Joi.object({
-    email: Joi.string()
-      .email()
-      .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
-      .required(),
-    password: Joi.string()
-      .min(4)
-      .required()
+    email: emailCheck(),
+    password: passwordCheck()
   })
 }
