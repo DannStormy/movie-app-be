@@ -1,9 +1,11 @@
-import User from "../services/userService";
+import Helper from "../utils/helpers/helpers";
+import UserService from "../services/user_service";
 
-const { addUser, loginUser } = User
+const { addUser, loginUser } = UserService
+const { generateJWT } = Helper
 
 const register = async (req, res) => {
-    try {      
+    try {
         await addUser(req.body)
         return res.status(200).json({
             message: 'register successful'
@@ -13,11 +15,14 @@ const register = async (req, res) => {
         return error
     }
 }
+
 const login = async (req, res) => {
-    try {      
+    try {
         await loginUser(req.body)
+        let token = await generateJWT(req.body)
         return res.status(200).json({
-            message: 'login successful'
+            message: 'login successful',
+            data: token
         })
     } catch (error) {
         console.log(error)

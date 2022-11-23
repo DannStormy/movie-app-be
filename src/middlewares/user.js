@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 
 import Helper from '../utils/helpers/helpers';
 import userSchema from "../validations/userSchema";
-import UserService from "../services/userService"
+import UserService from "../services/user_service"
 
 const { registerSchema, loginSchema } = userSchema;
 const { getUserByEmail } = UserService;
@@ -68,7 +68,7 @@ export default class UserMiddleware {
             return error
         }
     }
-    
+
     /**
      * find user in users table 
      * @static
@@ -83,7 +83,7 @@ export default class UserMiddleware {
             const user = await getUserByEmail(email);
             if (!user) {
                 return res.status(409).json({ status: 'conflict', message: 'user does not exist' })
-            }            
+            }
             const passwordMatch = await Helper.comparePasswordHash(password, user.password);
             if (!passwordMatch) {
                 return res.status(403).json({ status: 'forbidden', message: 'wrong password' })
