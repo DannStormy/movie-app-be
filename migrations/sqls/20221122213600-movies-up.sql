@@ -4,7 +4,7 @@ CREATE table IF NOT EXISTS movies (
     title TEXT NOT NULL,
     genre TEXT NOT NULL,
     year integer NOT NULL,
-    rating integer DEFAULT NULL,
+    rating numeric(2, 1) DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );

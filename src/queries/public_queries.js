@@ -15,4 +15,11 @@ export default {
         WHERE title
         ILIKE $1
    `,
+   fetchMovieByRating: `
+        SELECT *
+        FROM movies
+        WHERE rating
+        BETWEEN $1
+        AND $2
+   `,
 }
