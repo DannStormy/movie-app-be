@@ -2,13 +2,12 @@ export default {
   fetchAllMovies: `
         SELECT *
         FROM movies
+        OFFSET $1 LIMIT $2
     `,
-  fetchMoviesByPage: `
-        SELECT *
+  fetchMoviesCount: `
+        SELECT count(*)
         FROM movies
-        LIMIT $1
-        OFFSET ($2 - 1) * 5;
-   `,
+    `,
   searchMovieQuery: `
         SELECT *
         FROM movies
