@@ -1,10 +1,10 @@
 import { Router } from "express";
-import userRouter from "./user_route";
-import publicRouter from "./public_route";
+import userRouter from "./user.route";
+import movieRouter from "./movie.route";
 
 const router = Router();
 
-router.use('/titles', publicRouter);
+router.use('/movies', movieRouter);
 router.use('/user', userRouter);
 router.use((req, res) => res.status(404).json({
     status: 'error',

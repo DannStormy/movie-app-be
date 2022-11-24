@@ -1,17 +1,17 @@
-let db,Helper,user_queries;_e9b‍.x([["default",()=>UserService]]);_e9b‍.w("../config/config",[["default",["db"],function(v){db=v}]]);_e9b‍.w("../utils/helpers/helpers",[["default",["Helper"],function(v){Helper=v}]]);_e9b‍.w("../queries/user_queries",[["default",["user_queries"],function(v){user_queries=v}]]);
-
-
+import db from "../config/config";
+import Helper from '../utils/helpers/helpers';
+import user_queries from "../queries/user.queries";
 
 const { registerUser, loginUser, findUserByEmail } = user_queries;
 
-               class UserService {
+export default class UserService {
     /**
      * register new user
      * @memberof UserService
      */
     static async addUser(data) {
-        let { firstName, lastName, email, password } = data;
-        password = await Helper.generatePasswordHash(password)
+        const { firstName, lastName, email, password } = data;
+        password = await Helper.generatePasswordHash(password);
         return db.none(registerUser, [firstName, lastName, email, password]);
     }
 
@@ -28,7 +28,7 @@ const { registerUser, loginUser, findUserByEmail } = user_queries;
      * @memberof UserService
      */
     static async loginUser(data) {
-        let { email, password } = data;
+        const { email, password } = data;
         return db.oneOrNone(loginUser, [email, password])
     }
 }

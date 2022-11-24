@@ -6,21 +6,14 @@ export default {
   fetchMoviesByPage: `
         SELECT *
         FROM movies
-        LIMIT 5
-        OFFSET ($1 - 1) * 5;
+        LIMIT $1
+        OFFSET ($2 - 1) * 5;
    `,
   fetchMovieByTitle: `
         SELECT *
         FROM movies
         WHERE title
         ILIKE $1
-   `,
-  fetchMovieByRating: `
-        SELECT *
-        FROM movies
-        WHERE rating
-        BETWEEN $1
-        AND $2
    `,
   fetchMovieByGenre: `
         SELECT *
