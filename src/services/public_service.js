@@ -6,6 +6,8 @@ const {
   fetchAllMovies,
   fetchMovieByTitle,
   fetchMovieByRating,
+  fetchMovieByGenre,
+  fetchMovieByYear,
 } = public_queries;
 
 export default class PublicService {
@@ -42,5 +44,19 @@ export default class PublicService {
   static async fetchMovieByRating(data) {
     let { rating } = data;
     return db.manyOrNone(fetchMovieByRating, [rating, `${rating}.9`]);
+  }
+
+  /**
+   * fetch movies by genre
+   * @memberof PublicService
+   */
+  static async fetchMovieByGenre(data) {
+    let { genre } = data;
+    return db.manyOrNone(fetchMovieByGenre, [`%${genre}`]);
+  }
+
+  static async fetchMovieByYear(data) {
+    let { year } = data;
+    return db.manyOrNone(fetchMovieByYear, [year]);
   }
 }
