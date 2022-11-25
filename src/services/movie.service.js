@@ -32,7 +32,6 @@ export default class MovieService {
    */
   static async fetchMovieByQuery(query) {
     const { title, year, genre } = query;
-    console.log('Here', query)
-    return db.any(searchMovieQuery, [`%${title}%`, year, `%${genre}`]);
+    return db.manyOrNone(searchMovieQuery, [`%${title}%`, year, `%${genre}%`]);
   }
 }
