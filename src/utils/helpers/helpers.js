@@ -65,7 +65,6 @@ export default class Helper {
    */
   static async comparePasswordHash(password, hash) {
     const result = await bcrypt.compare(password, hash);
-    console.log("Result", hash);
     return result;
   }
 
@@ -76,7 +75,7 @@ export default class Helper {
    * @returns {String}
    */
   static generateJWT(data) {
-    const token = jwt.sign(data, process.env.JWT_SECRET_KEY, { expiresIn: "1m" });
+    const token = jwt.sign(data, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
     const refreshToken = jwt.sign(data, process.env.REFRESH_SECRET);
     return {token, refreshToken}
   }

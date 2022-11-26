@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { register, login } from "../controllers/user.js";
 import UserMiddleware from "../middlewares/user.js";
-import userSchema from "../validations/userSchema.js";
+import schema from "../validations/schema.js";
 
 const router = Router();
 
-const {registerSchema, loginSchema} = userSchema;
+const {registerSchema, loginSchema} = schema;
 const { validate, checkUserExists, checkUserDetails } = UserMiddleware;
 
 router.post('/register', validate(registerSchema), checkUserExists, register); 

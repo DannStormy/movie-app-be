@@ -28,7 +28,7 @@ export default class ValidationHelper {
      * @returns {Boolean}
      */
     static passwordCheck() {
-        return Joi.string().trim().required().min(7)
+        return Joi.string().trim().required().min(5)
             .messages({
                 'string.base': 'Password must be a string',
                 'string.empty': 'Password field cannot be empty',
