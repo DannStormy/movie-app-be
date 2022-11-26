@@ -3,8 +3,9 @@ CREATE table IF NOT EXISTS movies (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     genre TEXT NOT NULL,
-    year integer NOT NULL,
+    year text NOT NULL,
     rating numeric(2, 1) DEFAULT NULL,
+    ratingsCount int default 0,
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 );

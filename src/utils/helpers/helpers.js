@@ -14,6 +14,7 @@ export default class Helper {
   static async validateInput(schema, object) {
     return schema.validateAsync(object);
   }
+  
   /**
    * hash password
    * @static
@@ -55,6 +56,7 @@ export default class Helper {
     const displayPage = Math.floor(total / +limit);
     return total % +limit ? displayPage + 1 : displayPage;
   }
+
   /**
    * compare hash password
    * @static
@@ -66,19 +68,26 @@ export default class Helper {
     console.log("Result", hash);
     return result;
   }
+
   /**
-   * generate user token
+   * generate JWT token
    * @static
    * @memberof Helper
    * @returns {String}
    */
   static generateJWT(data) {
-    return jwt.sign(data, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
-    // {
-    //     data: payload, // this should be user id
-    // },
+    const token = jwt.sign(data, process.env.JWT_SECRET_KEY, { expiresIn: "1m" });
+    const refreshToken = jwt.sign(data, process.env.REFRESH_SECRET);
+    return {token, refreshToken}
+  }
 
-    // );
-    // return sessionToken
+  /**
+   * verify JWT token
+   * @static
+   * @memberof Helper
+   * @returns {String}
+   */
+  static verifyToken(token, JWT_SECRET) {
+    return jwt.verify(token, JWT_SECRET);
   }
 }
