@@ -3,7 +3,6 @@ import {
   superLogin,
   fetchUsers,
   createNewAdmin,
-  addNewMovie,
 } from "../controllers/super.controller.js";
 import AccessControlMiddleware from "../middlewares/accessControl";
 import SuperMiddleware from "../middlewares/super.middleware";
@@ -14,7 +13,7 @@ import schema from "../validations/schema.js";
 const router = Router();
 
 const { isSuper } = AccessControlMiddleware;
-const { loginSchema, createAdminSchema, addMovieSchema } = schema;
+const { loginSchema, createAdminSchema } = schema;
 const { checkDetails, checkAdminExists } = SuperMiddleware;
 const { authenticate, validate } = UserMiddleware;
 
@@ -26,12 +25,6 @@ router.post(
   checkAdminExists,
   [authenticate, isSuper],
   createNewAdmin
-);
-router.post(
-  "/add-movie",
-  validate(addMovieSchema),
-  [authenticate, isSuper],
-  addNewMovie
 );
 
 export default router;

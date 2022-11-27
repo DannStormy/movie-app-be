@@ -1,3 +1,6 @@
+import UserService from "../services/user.service";
+
+const { fetchClientStatus } = UserService;
 /**
  * A collection of middleware methods used for access control
  * of requests through protected routes.
@@ -6,7 +9,7 @@
  */
 class AccessControlMiddleware {
   /**
-   * client middleware guard.
+   * client/admin/superadmin middleware guard.
    * @param { Object } req - The request from the endpoint.
    * @param { Object } res - The response returned by the method.
    * @param { function } next - Calls the next handle.
@@ -16,6 +19,21 @@ class AccessControlMiddleware {
   static isTriUser(req, res, next) {
     const { role } = req.data;
     if (role !== "user" && "admin" && "super")
+      return res.status(403).send({ message: "Access denied" });
+    next();
+  }
+
+  /**
+   * admin/superadmin middleware guard.
+   * @param { Object } req - The request from the endpoint.
+   * @param { Object } res - The response returned by the method.
+   * @param { function } next - Calls the next handle.
+   * @returns { JSON | Null } - Returns error response if validation fails or Null if otherwise.
+   * @memberof accessControl Middleware
+   */
+  static isBiUser(req, res, next) {
+    const { role } = req.data;
+    if (role !== "admin" && "super")
       return res.status(403).send({ message: "Access denied" });
     next();
   }
@@ -34,6 +52,7 @@ class AccessControlMiddleware {
       return res.status(403).send({ message: "Access denied" });
     next();
   }
+
   /**
    * Super Admin middleware guard.
    * @param { Object } req - The request from the endpoint.
@@ -46,6 +65,24 @@ class AccessControlMiddleware {
     const { role } = req.data;
     if (role !== "super")
       return res.status(403).send({ message: "Access denied" });
+    next();
+  }
+
+  /**
+   * Accout active? middleware guard.
+   * @param { Object } req - The request from the endpoint.
+   * @param { Object } res - The response returned by the method.
+   * @param { function } next - Calls the next handle.
+   * @returns { JSON | Null } - Returns error response if validation fails or Null if otherwise.
+   * @memberof accessControl Middleware
+   */
+  static async isActive(req, res, next) {
+    const { userId } = req.data;
+    const { status } = await fetchClientStatus(userId);
+    if (!status)
+      return res
+        .status(403)
+        .send({ message: "Account Deactivated, can't perform action" });
     next();
   }
 }

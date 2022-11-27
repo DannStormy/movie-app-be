@@ -1,16 +1,17 @@
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
 
-const { addUser } = UserService;
+const { addUser, addStatus } = UserService;
 const { generateJWT } = Helper;
 
 const register = async (req, res) => {
   try {
-    await addUser(req.body);
+    const user = await addUser(req.body);
+    await(addStatus(user.id))
     delete req.body.password;
     return res.status(200).json({
       message: "register successful",
-      data: req.body
+      data: user
     });
   } catch (error) {
     console.log(error); //will use logger instead (testing now)
