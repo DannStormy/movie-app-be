@@ -2,7 +2,7 @@ import Helper from "../utils/helpers/helpers";
 import SuperService from "../services/super.service";
 
 const { generateJWT } = Helper;
-const { fetchAllUsers, createAdmin, addMovie } = SuperService;
+const { fetchAllUsers, createAdmin, addMovie, setAccountStatus } = SuperService;
 
 const superLogin = async (req, res) => {
   try {
@@ -59,4 +59,23 @@ const addNewMovie = async (req, res) => {
   }
 };
 
-export { superLogin, fetchUsers, createNewAdmin, addNewMovie };
+const changeUserStatus = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    await setAccountStatus(req.body);
+    return res.status(200).json({
+      message: `Account with id:${id} set to ${status}`,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+export {
+  superLogin,
+  fetchUsers,
+  createNewAdmin,
+  addNewMovie,
+  changeUserStatus,
+};

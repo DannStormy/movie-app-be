@@ -17,12 +17,16 @@ export default {
     password: passwordCheck(),
   }),
   createAdminSchema: Joi.object({
-    name: stringCheck(),
+    name: stringCheck("name"),
     email: emailCheck(),
   }),
   addMovieSchema: Joi.object({
-    title: stringCheck(),
-    genre: stringCheck(),
+    title: stringCheck("title"),
+    genre: stringCheck("genre"),
     year: numberCheck(),
+  }),
+  changeStatusSchema: Joi.object({
+    id: numberCheck(),
+    status: Joi.boolean(),
   }),
 };

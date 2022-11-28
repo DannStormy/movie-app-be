@@ -7,6 +7,7 @@ const {
   fetchAllUsers,
   createAdmin,
   addMovie,
+  setClientStatus,
 } = super_queries;
 
 export default class SuperService {
@@ -50,5 +51,14 @@ export default class SuperService {
   static async addMovie(data) {
     const { title, genre, year } = data;
     return db.none(addMovie, [title, genre, year]);
+  }
+
+  /**
+   * change user account status
+   * @memberof SuperService
+   */
+  static async setAccountStatus(data) {
+    const { id, status } = data;
+    return db.none(setClientStatus, [status, id]);
   }
 }

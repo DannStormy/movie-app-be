@@ -24,4 +24,9 @@ export default {
     INSERT INTO movies(title, genre, year)
     VALUES ($1, $2, $3)
     `,
+  setClientStatus: `
+      UPDATE client_account_status
+      SET status = $1
+      WHERE id = $2;
+`,
 };
