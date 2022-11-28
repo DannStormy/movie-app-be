@@ -5,7 +5,6 @@ const { generateJWT } = Helper;
 const {
   fetchAllUsers,
   createAdmin,
-  addMovie,
   setUserStatus,
   setAdminStatus,
   fetchAdmin,
@@ -54,19 +53,6 @@ const createNewAdmin = async (req, res) => {
   }
 };
 
-const addNewMovie = async (req, res) => {
-  try {
-    await addMovie(req.body);
-    return res.status(200).json({
-      message: "movie added",
-      data: req.body,
-    });
-  } catch (error) {
-    console.log(error);
-    return error;
-  }
-};
-
 const changeUserStatus = async (req, res) => {
   try {
     const { id, status } = req.body;
@@ -107,7 +93,6 @@ export {
   superLogin,
   fetchUsers,
   createNewAdmin,
-  addNewMovie,
   changeUserStatus,
   changeAdminStatus,
 };

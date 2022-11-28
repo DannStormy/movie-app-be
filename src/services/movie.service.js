@@ -1,6 +1,5 @@
 import db from "../config/config";
-import movieQueries from "../queries/movie.queries";
-import public_queries from "../queries/movie.queries";
+import movie_queries from "../queries/movie.queries";
 import Helper from "../utils/helpers/helpers";
 
 const { fetchResourceByPage, calcPages } = Helper;
@@ -10,7 +9,9 @@ const {
   fetchMoviesCount,
   fetchMovieByID,
   rateMovie,
-} = public_queries;
+  addMovie,
+  removeMovie,
+} = movie_queries;
 
 export default class MovieService {
   /**
@@ -62,15 +63,41 @@ export default class MovieService {
   static async getMovies({ page, limit, search }) {
     console.log("search movies", search);
     return search
-      ? MovieService.fetchMovieByQuery( page, limit, search )
+      ? MovieService.fetchMovieByQuery(page, limit, search)
       : MovieService.fetchAllMovies({ page, limit });
   }
 
+  /**
+   * add movie
+   * @memberof SuperService
+   */
+  static async addMovie(data) {
+    const { title, genre, year } = data;
+    return db.none(addMovie, [title, genre, year]);
+  }
+
+  /**
+   * delete movie
+   * @memberof SuperService
+   */
+  static async removeMovie(params) {
+    const { id } = params;
+    return db.none(removeMovie, [id]);
+  }
+
+  /**
+   * returns movie with given ID
+   * @memberof SuperService
+   */
   static async getMovieByID(params) {
     const { id } = params;
     return db.oneOrNone(fetchMovieByID, [id]);
   }
 
+  /**
+   * rate movie with given ID
+   * @memberof SuperService
+   */
   static async rateMovie(data) {
     let { rating, id } = data;
     const movie = await db.oneOrNone(fetchMovieByID, [id]);

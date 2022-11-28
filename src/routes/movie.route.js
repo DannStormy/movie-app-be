@@ -3,9 +3,9 @@ import {
   fetchMovies,
   fetchMovieByID,
   updateMovieRating,
+  addNewMovie,
+  deleteMovie,
 } from "../controllers/movie.controller";
-import { addNewMovie } from "../controllers/super.controller.js";
-
 import AccessControlMiddleware from "../middlewares/accessControl";
 import UserMiddleware from "../middlewares/user.js";
 import schema from "../validations/schema.js";
@@ -25,5 +25,6 @@ router.post(
   [authenticate, isBiUser],
   addNewMovie
 );
+router.delete("/delete/:id", [authenticate, isBiUser], deleteMovie);
 
 export default router;

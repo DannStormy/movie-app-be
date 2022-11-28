@@ -20,26 +20,22 @@ export default {
         INSERT INTO admin(name, email)
         VALUES ($1, $2)
     `,
-  addMovie: `
-    INSERT INTO movies(title, genre, year)
-    VALUES ($1, $2, $3)
-    `,
   findUserByID: `
-    SELECT * FROM client_account_status
-    WHERE id = $1
+        SELECT * FROM client_account_status
+        WHERE id = $1
 `,
   findAdminByID: `
-    SELECT * FROM admin
-    WHERE id = $1
+        SELECT * FROM admin
+        WHERE id = $1
 `,
   setClientStatus: `
-      UPDATE client_account_status
-      SET status = $1
-      WHERE id = $2;
+        UPDATE client_account_status
+        SET status = $1
+        WHERE id = $2;
 `,
   setAdminStatus: `
-      UPDATE admin
-      SET status = $1
-      WHERE id = $2;
+        UPDATE admin
+        SET status = $1
+        WHERE id = $2;
 `,
 };

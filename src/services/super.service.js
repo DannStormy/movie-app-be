@@ -6,7 +6,6 @@ const {
   findAdminByEmail,
   fetchAllUsers,
   createAdmin,
-  addMovie,
   findUserByID,
   findAdminByID,
   setClientStatus,
@@ -52,15 +51,6 @@ export default class SuperService {
    */
   static async fetchAdmin(id) {
     return db.oneOrNone(findAdminByID, [id]);
-  }
-
-  /**
-   * add movie
-   * @memberof SuperService
-   */
-  static async addMovie(data) {
-    const { title, genre, year } = data;
-    return db.none(addMovie, [title, genre, year]);
   }
 
   /**

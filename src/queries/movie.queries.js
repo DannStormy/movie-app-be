@@ -29,4 +29,12 @@ export default {
       SET rating = $1, ratingscount = $2
       WHERE id = $3;   
    `,
+  removeMovie: `
+      DELETE FROM movies
+      WHERE id = $1
+      `,
+  addMovie: `
+      INSERT INTO movies(title, genre, year)
+      VALUES ($1, $2, $3)
+    `,
 };

@@ -18,7 +18,7 @@ class AccessControlMiddleware {
    */
   static isTriUser(req, res, next) {
     const { role } = req.data;
-    if (role !== "user" && "admin" && "super")
+    if (role != "user" && role !== "admin" && role !== "super")
       return res.status(403).send({ message: "Access denied" });
     next();
   }
@@ -33,8 +33,9 @@ class AccessControlMiddleware {
    */
   static isBiUser(req, res, next) {
     const { role } = req.data;
-    if (role !== "admin" && "super")
+    if (role !== "admin" && role !== "super") {
       return res.status(403).send({ message: "Access denied" });
+    }
     next();
   }
 
@@ -77,12 +78,14 @@ class AccessControlMiddleware {
    * @memberof accessControl Middleware
    */
   static async isActive(req, res, next) {
-    const { userId } = req.data;
-    const { status } = await fetchClientStatus(userId);
-    if (!status)
-      return res
-        .status(403)
-        .send({ message: "Account Deactivated, can't perform action" });
+    const { userId, role } = req.data;
+    if (role === "user") {
+      const { status } = await fetchClientStatus(userId);
+      if (!status)
+        return res
+          .status(403)
+          .send({ message: "Account Deactivated, can't perform action" });
+    }
     next();
   }
 }
