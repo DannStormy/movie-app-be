@@ -2,7 +2,15 @@ import Helper from "../utils/helpers/helpers";
 import SuperService from "../services/super.service";
 
 const { generateJWT } = Helper;
-const { fetchAllUsers, createAdmin, addMovie, setAccountStatus } = SuperService;
+const {
+  fetchAllUsers,
+  createAdmin,
+  addMovie,
+  setUserStatus,
+  setAdminStatus,
+  fetchAdmin,
+  fetchUser,
+} = SuperService;
 
 const superLogin = async (req, res) => {
   try {
@@ -62,9 +70,32 @@ const addNewMovie = async (req, res) => {
 const changeUserStatus = async (req, res) => {
   try {
     const { id, status } = req.body;
-    await setAccountStatus(req.body);
+    const user = await fetchUser(id);
+    if (!user)
+      return res
+        .status(400)
+        .json({ message: `User account with id:${id} not found` });
+    await setUserStatus(req.body);
     return res.status(200).json({
-      message: `Account with id:${id} set to ${status}`,
+      message: `User account with id:${id} set to ${status}`,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+const changeAdminStatus = async (req, res) => {
+  try {
+    const { id, status } = req.body;
+    const admin = await fetchAdmin(id);
+    if (!admin)
+      return res
+        .status(400)
+        .json({ message: `Admin account with id:${id} not found` });
+    await setAdminStatus(req.body);
+    return res.status(200).json({
+      message: `Admin account with id:${id} set to ${status}`,
     });
   } catch (error) {
     console.log(error);
@@ -78,4 +109,5 @@ export {
   createNewAdmin,
   addNewMovie,
   changeUserStatus,
+  changeAdminStatus,
 };

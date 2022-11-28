@@ -4,6 +4,7 @@ import {
   fetchUsers,
   createNewAdmin,
   changeUserStatus,
+  changeAdminStatus,
 } from "../controllers/super.controller.js";
 import AccessControlMiddleware from "../middlewares/accessControl";
 import SuperMiddleware from "../middlewares/super.middleware";
@@ -31,6 +32,12 @@ router.put(
   validate(changeStatusSchema),
   [authenticate, isSuper],
   changeUserStatus
+);
+router.put(
+  "/setadminstate",
+  validate(changeStatusSchema),
+  [authenticate, isSuper],
+  changeAdminStatus
 );
 
 export default router;

@@ -7,7 +7,10 @@ const {
   fetchAllUsers,
   createAdmin,
   addMovie,
+  findUserByID,
+  findAdminByID,
   setClientStatus,
+  setAdminStatus,
 } = super_queries;
 
 export default class SuperService {
@@ -43,6 +46,13 @@ export default class SuperService {
     const { name, email } = data;
     return db.none(createAdmin, [name, email]);
   }
+  /**
+   * fetch admin by id
+   * @memberof SuperService
+   */
+  static async fetchAdmin(id) {
+    return db.oneOrNone(findAdminByID, [id]);
+  }
 
   /**
    * add movie
@@ -54,11 +64,28 @@ export default class SuperService {
   }
 
   /**
+   * fetch user by id
+   * @memberof SuperService
+   */
+  static async fetchUser(id) {
+    return db.oneOrNone(findUserByID, [id]);
+  }
+
+  /**
    * change user account status
    * @memberof SuperService
    */
-  static async setAccountStatus(data) {
+  static async setUserStatus(data) {
     const { id, status } = data;
     return db.none(setClientStatus, [status, id]);
+  }
+
+  /**
+   * change admin account status
+   * @memberof SuperService
+   */
+  static async setAdminStatus(data) {
+    const { id, status } = data;
+    return db.none(setAdminStatus, [status, id]);
   }
 }
