@@ -50,13 +50,13 @@ router.patch(
 router.patch(
   "/edit-review/:id",
   validate(editReviewSchema),
-  [authenticate, isBiUser],
+  [authenticate, isBiUser, isActive],
   reviewEdit
 );
 router.patch(
   "/edit-rating/:id",
   validate(editRatingSchema),
-  [authenticate, isBiUser],
+  [authenticate, isBiUser, isActive],
   ratingEdit
 );
 router.delete("/delete/:id", [authenticate, isBiUser, isActive], deleteMovie);
