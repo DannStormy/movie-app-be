@@ -30,8 +30,17 @@ export default {
     status: Joi.boolean(),
   }),
   reviewMovieSchema: Joi.object({
-    movie_id: numberCheck('MovieID'),
-    userId: numberCheck('UserID'),
-    review: stringCheck(),
+    movie_id: numberCheck("MovieID"),
+    userId: numberCheck("UserID"),
+    review: stringCheck("Review"),
+  }),
+  editTitleSchema: Joi.object({
+    title: stringCheck("Title"),
+  }),
+  editRatingSchema: Joi.object({
+    rating: numberCheck("Rating"),
+  }),
+  editReviewSchema: Joi.object({
+    review: stringCheck("Review"),
   }),
 };

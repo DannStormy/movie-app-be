@@ -1,5 +1,7 @@
 import UserService from "../services/user.service";
+import SuperService from "../services/super.service";
 
+const { fetchAdmin } = SuperService;
 const { fetchClientStatus } = UserService;
 /**
  * A collection of middleware methods used for access control
@@ -81,6 +83,13 @@ class AccessControlMiddleware {
     const { userId, role } = req.data;
     if (role === "user") {
       const { status } = await fetchClientStatus(userId);
+      if (!status)
+        return res
+          .status(403)
+          .send({ message: "Account Deactivated, can't perform action" });
+    }
+    if (role === "admin") {
+      const { status } = await fetchAdmin(userId);
       if (!status)
         return res
           .status(403)

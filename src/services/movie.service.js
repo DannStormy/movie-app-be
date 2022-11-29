@@ -12,7 +12,10 @@ const {
   rateMovie,
   addMovie,
   removeMovie,
-  reviewMovie
+  reviewMovie,
+  editRating,
+  editReview,
+  editTitle,
 } = movie_queries;
 
 export default class MovieService {
@@ -112,7 +115,34 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async reviewMovie(data) {
-    let { review, movie_id, userId } = data;
+    const { review, movie_id, userId } = data;
     return db.none(reviewMovie, [review, movie_id, userId]);
+  }
+  /**
+   * edit title with given ID
+   * @memberof MovieService
+   */
+  static async editTitle(body, params) {
+    const { title } = body;
+    const { id } = params;
+    return db.none(editTitle, [title, id]);
+  }
+  /**
+   * edit rating with given ID
+   * @memberof MovieService
+   */
+  static async editRating(body, params) {
+    const { rating } = body;
+    const { id } = params;
+    return db.none(editRating, [rating, id]);
+  }
+  /**
+   * edit review with given ID
+   * @memberof MovieService
+   */
+  static async editReview(body, params) {
+    const { review } = body;
+    const { id } = params;
+    return db.none(editReview, [review, id]);
   }
 }

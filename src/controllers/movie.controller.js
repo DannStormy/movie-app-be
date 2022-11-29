@@ -7,6 +7,9 @@ const {
   addMovie,
   removeMovie,
   reviewMovie,
+  editRating,
+  editReview,
+  editTitle,
 } = MovieService;
 
 const fetchMovies = async (req, res) => {
@@ -91,6 +94,42 @@ const movieReview = async (req, res) => {
   }
 };
 
+const titleEdit = async (req, res) => {
+  try {
+    await editTitle(req.body, req.params);
+    return res.status(200).json({
+      message: `title changed to ${req.body.title}`,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+const ratingEdit = async (req, res) => {
+  try {
+    await editRating(req.body, req.params);
+    return res.status(200).json({
+      message: `rating changed to ${req.body.rating}`,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
+const reviewEdit = async (req, res) => {
+  try {
+    await editReview(req.body, req.params);
+    return res.status(200).json({
+      message: `Review edited`,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
 export {
   fetchMovies,
   fetchMovieByID,
@@ -98,4 +137,7 @@ export {
   addNewMovie,
   deleteMovie,
   movieReview,
+  ratingEdit,
+  reviewEdit,
+  titleEdit,
 };
