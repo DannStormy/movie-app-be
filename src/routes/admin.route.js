@@ -1,11 +1,11 @@
 import { Router } from "express";
 import adminLogin from "../controllers/admin.controller";
 import AdminMiddleware from "../middlewares/admin.middleware";
-import UserMiddleware from "../middlewares/user.js";
+import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";
 
 const router = Router();
-const { validate } = UserMiddleware;
+const { validate } = AuthMiddleware;
 const { checkDetails } = AdminMiddleware;
 const { loginSchema } = schema;
 

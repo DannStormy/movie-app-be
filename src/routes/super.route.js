@@ -8,7 +8,7 @@ import {
 } from "../controllers/super.controller.js";
 import AccessControlMiddleware from "../middlewares/accessControl";
 import SuperMiddleware from "../middlewares/super.middleware";
-import UserMiddleware from "../middlewares/user.js";
+import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";
 
 const router = Router();
@@ -16,7 +16,7 @@ const router = Router();
 const { isSuper } = AccessControlMiddleware;
 const { loginSchema, createAdminSchema, changeStatusSchema } = schema;
 const { checkDetails, checkAdminExists } = SuperMiddleware;
-const { authenticate, validate } = UserMiddleware;
+const { authenticate, validate } = AuthMiddleware;
 
 router.get("/users", [authenticate, isSuper], fetchUsers);
 router.post("/login", validate(loginSchema), checkDetails, superLogin);

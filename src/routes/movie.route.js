@@ -7,11 +7,11 @@ import {
   deleteMovie,
 } from "../controllers/movie.controller";
 import AccessControlMiddleware from "../middlewares/accessControl";
-import UserMiddleware from "../middlewares/user.js";
+import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";
 
 const { isBiUser, isActive } = AccessControlMiddleware;
-const { validate, authenticate } = UserMiddleware;
+const { validate, authenticate } = AuthMiddleware;
 const { addMovieSchema } = schema;
 
 const router = Router();
