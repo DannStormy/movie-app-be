@@ -1,16 +1,16 @@
 import db from "../config/config";
 import super_queries from "../queries/super.queries";
+import adminQueries from "../queries/admin.queries";
 
 const {
   findSuperByEmail,
-  findAdminByEmail,
   fetchAllUsers,
   createAdmin,
   findUserByID,
-  findAdminByID,
   setClientStatus,
   setAdminStatus,
 } = super_queries;
+const { findAdminByEmail, findAdminByID } = adminQueries;
 
 export default class SuperService {
   /**

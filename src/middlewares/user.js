@@ -4,8 +4,13 @@ import UserService from "../services/user.service";
 const { getUserByEmail } = UserService;
 
 export default class UserMiddleware {
-  /**
+ /**
+   * validates post request body
    * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns the details
    */
   static validate(schema) {
     return async (req, res, next) => {
@@ -17,15 +22,6 @@ export default class UserMiddleware {
       }
     };
   }
-
-  /**
-   * validates login user post request
-   * @static
-   * @param {Request} req - The request from the endpoint.
-   * @param {Response} res - The response returned by the method.
-   * @param {Next} next - The function that calls the next handler.
-   * @returns { JSON } - Returns the details
-   */
 
   /**
    * Checks if user exists

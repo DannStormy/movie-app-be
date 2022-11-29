@@ -4,7 +4,7 @@ const { findSuperByEmail, findAdminByEmail } = SuperService;
 
 export default class SuperMiddleware {
   /**
-   * find user in users table
+   * find superadmin in super table
    * @static
    * @param {Request} req - The request from the endpoint.
    * @param {Response} res - The response returned by the method.

@@ -3,15 +3,6 @@ export default {
         SELECT * FROM super
         WHERE email = $1
     `,
-  findAdminByEmail: `
-        SELECT * FROM admin
-        WHERE email = $1
-    `,
-  loginSuper: `
-        SELECT email, password
-        FROM users
-        WHERE email = $1
-    `,
   fetchAllUsers: `
         SELECT firstName, lastName, email
         FROM users
@@ -22,10 +13,6 @@ export default {
     `,
   findUserByID: `
         SELECT * FROM client_account_status
-        WHERE id = $1
-`,
-  findAdminByID: `
-        SELECT * FROM admin
         WHERE id = $1
 `,
   setClientStatus: `

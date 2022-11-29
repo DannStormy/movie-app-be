@@ -1,14 +1,15 @@
 import { Router } from "express";
 import userRouter from "./user.route";
 import movieRouter from "./movie.route";
-import superRouter from "./super_route";
+import superRouter from "./super.route";
+import adminRouter from "./admin.route";
 
 const router = Router();
 
 router.use("/movies", movieRouter);
 router.use("/user", userRouter);
+router.use("/admin", adminRouter);
 router.use("/super", superRouter);
-
 router.use((req, res) =>
   res.status(404).json({
     status: "error",
@@ -17,7 +18,6 @@ router.use((req, res) =>
     message: "Route not found",
   })
 );
-
 router.use((req, res) =>
   res.status(500).json({
     status: "error",

@@ -10,7 +10,7 @@ import AccessControlMiddleware from "../middlewares/accessControl";
 import UserMiddleware from "../middlewares/user.js";
 import schema from "../validations/schema.js";
 
-const { isTriUser, isBiUser, isActive } = AccessControlMiddleware;
+const { isBiUser, isActive } = AccessControlMiddleware;
 const { validate, authenticate } = UserMiddleware;
 const { addMovieSchema } = schema;
 
@@ -18,7 +18,7 @@ const router = Router();
 
 router.get("/", fetchMovies);
 router.get("/:id", fetchMovieByID);
-router.put("/rating", [authenticate, isTriUser, isActive], updateMovieRating);
+router.put("/rating", [authenticate, isActive], updateMovieRating);
 router.post(
   "/add-movie",
   validate(addMovieSchema),
