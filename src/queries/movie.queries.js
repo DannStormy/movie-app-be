@@ -6,17 +6,26 @@ export default {
       OFFSET $1 LIMIT $2
     `,
   fetchMoviesCount: `
-      SELECT count(*)
+      SELECT COUNT(*)
       FROM movies
     `,
+  searchMovieCount: `
+      SELECT count(*)
+      FROM movies
+      WHERE title
+      ILIKE $1 
+      OR year = $2
+      OR genre 
+      ILIKE $3
+   `,
   searchMovieQuery: `
       SELECT *
       FROM movies
       WHERE title
       ILIKE $3 
-      OR year = $3
+      OR year = $4
       OR genre 
-      ILIKE $3
+      ILIKE $5
       OFFSET $1 LIMIT $2
    `,
   fetchMovieByID: `

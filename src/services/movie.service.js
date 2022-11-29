@@ -6,6 +6,7 @@ const { fetchResourceByPage, calcPages } = Helper;
 const {
   fetchAllMovies,
   searchMovieQuery,
+  searchMovieCount,
   fetchMoviesCount,
   fetchMovieByID,
   rateMovie,
@@ -19,7 +20,6 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async fetchAllMovies({ page = 1, limit = 10 }) {
-    console.error("Na me");
     const [total, result] = await fetchResourceByPage({
       page,
       limit,
@@ -39,13 +39,11 @@ export default class MovieService {
    * fetch movies by name, genre, year
    * @memberof MovieService
    */
-  static async fetchMovieByQuery({ page = 1, limit = 10, search }) {
-    const { title, year, genre } = search;
-    console.log("I ran");
+  static async fetchMovieByQuery({ page = 1, limit = 10, title, year, genre }) {
     const [total, result] = await fetchResourceByPage({
       page,
       limit,
-      getCount: fetchMoviesCount, //query to count all movies
+      getCount: searchMovieCount, //query to count all movies
       getResources: searchMovieQuery, //query to get all the movies
       params: [`%${title}%`, year, `%${genre}%`],
       countParams: [`%${title}%`, year, `%${genre}%`],
@@ -57,19 +55,21 @@ export default class MovieService {
       totalPages: calcPages(total.count, limit),
       result,
     };
-    // return db.manyOrNone(searchMovieQuery, [`%${title}%`, year, `%${genre}%`]);
   }
 
-  static async getMovies({ page, limit, search }) {
-    console.log("search movies", search);
-    return search
-      ? MovieService.fetchMovieByQuery(page, limit, search)
+  /**
+   * fetch movies by query || get all movies
+   * @memberof MovieService
+   */
+  static async getMovies({ page, limit, title, genre, year }) {
+    return title || genre || year
+      ? MovieService.fetchMovieByQuery({ page, limit, title, genre, year })
       : MovieService.fetchAllMovies({ page, limit });
   }
 
   /**
    * add movie
-   * @memberof SuperService
+   * @memberof MovieService
    */
   static async addMovie(data) {
     const { title, genre, year } = data;
@@ -78,7 +78,7 @@ export default class MovieService {
 
   /**
    * delete movie
-   * @memberof SuperService
+   * @memberof MovieService
    */
   static async removeMovie(params) {
     const { id } = params;
@@ -87,7 +87,7 @@ export default class MovieService {
 
   /**
    * returns movie with given ID
-   * @memberof SuperService
+   * @memberof MovieService
    */
   static async getMovieByID(params) {
     const { id } = params;
@@ -96,7 +96,7 @@ export default class MovieService {
 
   /**
    * rate movie with given ID
-   * @memberof SuperService
+   * @memberof MovieService
    */
   static async rateMovie(data) {
     let { rating, id } = data;

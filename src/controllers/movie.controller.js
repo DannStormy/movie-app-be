@@ -5,20 +5,6 @@ const { getMovies, getMovieByID, rateMovie, addMovie, removeMovie } =
 
 const fetchMovies = async (req, res) => {
   try {
-    // const {title, genre, year} = req.query
-    // if (title || genre || year) {
-    //   console.log('Here', req.query)
-    //   const movies = await movie(req.query);
-    //   return res.status(200).json({
-    //     message: `movies returned`,
-    //     data: movies,
-    //   });
-    // }
-    // const movies = await fetchAllMovies(req.query);
-    // return res.status(200).json({
-    //   message: "movies fetched",
-    //   data: movies,
-    // });
     console.log("All queries", req.query);
     const movies = await getMovies(req.query);
     return res.status(200).json({
@@ -45,7 +31,7 @@ const fetchMovieByID = async (req, res) => {
 };
 
 const updateMovieRating = async (req, res) => {
-  console.log('Here')
+  console.log("Here");
   try {
     await rateMovie(req.body);
     return res.status(200).json({
