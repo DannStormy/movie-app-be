@@ -12,6 +12,7 @@ const {
   rateMovie,
   addMovie,
   removeMovie,
+  reviewMovie
 } = movie_queries;
 
 export default class MovieService {
@@ -105,5 +106,13 @@ export default class MovieService {
     rating = (Math.round(rating + movie.rating / movie.ratingscount) * 10) / 10;
     console.log(rating);
     return db.none(rateMovie, [rating, movie.ratingscount, movie.id]);
+  }
+  /**
+   * review movie with given ID
+   * @memberof MovieService
+   */
+  static async reviewMovie(data) {
+    let { review, movie_id, userId } = data;
+    return db.none(reviewMovie, [review, movie_id, userId]);
   }
 }

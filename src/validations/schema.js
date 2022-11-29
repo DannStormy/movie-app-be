@@ -29,4 +29,9 @@ export default {
     id: numberCheck(),
     status: Joi.boolean(),
   }),
+  reviewMovieSchema: Joi.object({
+    movie_id: numberCheck('MovieID'),
+    userId: numberCheck('UserID'),
+    review: stringCheck(),
+  }),
 };

@@ -1,7 +1,13 @@
 import MovieService from "../services/movie.service";
 
-const { getMovies, getMovieByID, rateMovie, addMovie, removeMovie } =
-  MovieService;
+const {
+  getMovies,
+  getMovieByID,
+  rateMovie,
+  addMovie,
+  removeMovie,
+  reviewMovie,
+} = MovieService;
 
 const fetchMovies = async (req, res) => {
   try {
@@ -73,10 +79,23 @@ const deleteMovie = async (req, res) => {
   }
 };
 
+const movieReview = async (req, res) => {
+  try {
+    await reviewMovie(req.body);
+    return res.status(200).json({
+      message: `reviewed submitted`,
+    });
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
+};
+
 export {
   fetchMovies,
   fetchMovieByID,
   updateMovieRating,
   addNewMovie,
   deleteMovie,
+  movieReview,
 };

@@ -46,4 +46,8 @@ export default {
       INSERT INTO movies(title, genre, year)
       VALUES ($1, $2, $3)
     `,
+  reviewMovie: `
+      INSERT INTO reviews(review, movie_id, user_id)
+      VALUES ($1, $2, $3)
+  `,
 };

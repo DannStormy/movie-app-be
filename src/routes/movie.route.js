@@ -5,14 +5,15 @@ import {
   updateMovieRating,
   addNewMovie,
   deleteMovie,
+  movieReview,
 } from "../controllers/movie.controller";
 import AccessControlMiddleware from "../middlewares/accessControl";
 import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";
 
-const { isBiUser, isActive } = AccessControlMiddleware;
+const { isBiUser, isUser, isActive } = AccessControlMiddleware;
 const { validate, authenticate } = AuthMiddleware;
-const { addMovieSchema } = schema;
+const { addMovieSchema, reviewMovieSchema } = schema;
 
 const router = Router();
 
@@ -24,6 +25,12 @@ router.post(
   validate(addMovieSchema),
   [authenticate, isBiUser],
   addNewMovie
+);
+router.post(
+  "/review-movie",
+  validate(reviewMovieSchema),
+  [authenticate, isUser],
+  movieReview
 );
 router.delete("/delete/:id", [authenticate, isBiUser], deleteMovie);
 
