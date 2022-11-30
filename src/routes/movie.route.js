@@ -27,7 +27,9 @@ const {
 const router = Router();
 
 router.get("/", fetchMovies);
-router.get("/:id", fetchMovieByID);
+router.get("/:id", fetchMovieByID); // :movieId
+
+router.use(authenticate);
 router.put("/rating", [authenticate, isActive], updateMovieRating);
 router.post(
   "/add-movie",
@@ -42,23 +44,23 @@ router.post(
   movieReview
 );
 router.patch(
-  "/edit-title/:id",
+  "/edit-title/:id", // put /:movieId
   validate(editTitleSchema),
   [authenticate, isSuper],
   titleEdit
 );
 router.patch(
-  "/edit-review/:id",
+  "/edit-review/:id", // put /reviews/:movieId
   validate(editReviewSchema),
   [authenticate, isBiUser, isActive],
   reviewEdit
 );
 router.patch(
-  "/edit-rating/:id",
+  "/edit-rating/:id", // put /rating/:movieId
   validate(editRatingSchema),
   [authenticate, isBiUser, isActive],
   ratingEdit
 );
-router.delete("/delete/:id", [authenticate, isBiUser, isActive], deleteMovie);
+router.delete("/delete/:id", [authenticate, isBiUser, isActive], deleteMovie); // delete /:movieId
 
 export default router;

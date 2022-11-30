@@ -12,12 +12,12 @@ const {
   editTitle,
 } = MovieService;
 
-const fetchMovies = async (req, res) => {
+export const fetchMovies = async (req, res) => {
   try {
-    console.log("All queries", req.query);
+    console.log("All queries", req.query);  // replace console with logger
     const movies = await getMovies(req.query);
     return res.status(200).json({
-      message: `movies returned`,
+      message: `movies returned`, // replace template string with regular one
       data: movies,
     });
   } catch (error) {

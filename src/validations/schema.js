@@ -12,6 +12,9 @@ export default {
     email: emailCheck(),
     password: passwordCheck(),
   }),
+  resetPasswordSchema: Joi.object({
+    email: emailCheck(),
+  }),
   loginSchema: Joi.object({
     email: emailCheck(),
     password: passwordCheck(),
