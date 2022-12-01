@@ -4,15 +4,7 @@ import adminQueries from "../queries/admin.queries";
 import super_queries from "../queries/super.queries";
 
 const { fetchResourceByPage, calcPages } = Helper;
-const {
-  findSuperByEmail,
-  fetchAllUsers,
-  fetchUsersCount,
-  createAdmin,
-  findUserByID,
-  setClientStatus,
-  setAdminStatus,
-} = super_queries;
+
 const { findAdminByEmail, findAdminByID } = adminQueries;
 
 export default class SuperService {
@@ -21,7 +13,7 @@ export default class SuperService {
    * @memberof SuperService
    */
   static async findSuperByEmail(email) {
-    return db.oneOrNone(findSuperByEmail, [email]);
+    return db.oneOrNone(super_queries.findSuperByEmail, [email]);
   }
 
   /**
@@ -40,8 +32,8 @@ export default class SuperService {
     const [total, result] = await fetchResourceByPage({
       page,
       limit,
-      getCount: fetchUsersCount, //query to count all movies
-      getResources: fetchAllUsers, //query to get all the movies
+      getCount: super_queries.fetchUsersCount, //query to count all movies
+      getResources: super_queries.fetchAllUsers, //query to get all the movies
     });
     return {
       total: +total.count,
@@ -57,7 +49,7 @@ export default class SuperService {
    */
   static async createAdmin(data) {
     const { name, email } = data;
-    return db.none(createAdmin, [name, email]);
+    return db.none(super_queries.createAdmin, [name, email]);
   }
   /**
    * fetch admin by id
@@ -72,7 +64,7 @@ export default class SuperService {
    * @memberof SuperService
    */
   static async fetchUser(id) {
-    return db.oneOrNone(findUserByID, [id]);
+    return db.oneOrNone(super_queries.findUserByID, [id]);
   }
 
   /**
@@ -81,7 +73,7 @@ export default class SuperService {
    */
   static async setUserStatus(data) {
     const { id, status } = data;
-    return db.none(setClientStatus, [status, id]);
+    return db.none(super_queries.setClientStatus, [status, id]);
   }
 
   /**
@@ -90,6 +82,6 @@ export default class SuperService {
    */
   static async setAdminStatus(data) {
     const { id, status } = data;
-    return db.none(setAdminStatus, [status, id]);
+    return db.none(super_queries.setAdminStatus, [status, id]);
   }
 }

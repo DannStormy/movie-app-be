@@ -28,7 +28,7 @@ export default class AdminMiddleware {
       req.user = admin;
       return next();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       return error;
     }
   }

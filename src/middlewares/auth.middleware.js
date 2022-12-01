@@ -1,5 +1,5 @@
 import Helper from "../utils/helpers/helpers";
-import UserService from "../services/user.service";
+import logger from "../logger";
 
 export default class AuthMiddleware {
   /**
@@ -16,6 +16,7 @@ export default class AuthMiddleware {
         await Helper.validateInput(schema, req.body);
         next();
       } catch (error) {
+        logger.error("Error", error);
         return res.status(400).json({ message: error.details[0].message });
       }
     };
@@ -68,7 +69,7 @@ export default class AuthMiddleware {
    * @memberof AuthMiddleware
    *
    */
-  static authenticate(req, res, next) {
+  static async authenticate(req, res, next) {
     const token = AuthMiddleware.checkToken(req);
     if (!token) {
       return res.json({
@@ -80,9 +81,12 @@ export default class AuthMiddleware {
         ? Helper.verifyToken(token, process.env.REFRESH_SECRET)
         : Helper.verifyToken(token, process.env.JWT_SECRET_KEY);
       req.data = decoded;
+      const active = await Helper.isActive(req.data.userId, req.data.role);
+      if (active === false)
+        return res.status(401).json({ message: "Account Deactivated" });
       next();
     } catch (err) {
-      console.log(err);
+      logger.error(err);
       return err;
     }
   }

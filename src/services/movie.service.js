@@ -3,20 +3,6 @@ import movie_queries from "../queries/movie.queries";
 import Helper from "../utils/helpers/helpers";
 
 const { fetchResourceByPage, calcPages } = Helper;
-const {
-  fetchAllMovies,
-  searchMovieQuery,
-  searchMovieCount,
-  fetchMoviesCount,
-  fetchMovieByID,
-  rateMovie,
-  addMovie,
-  removeMovie,
-  reviewMovie,
-  editRating,
-  editReview,
-  editTitle,
-} = movie_queries;
 
 export default class MovieService {
   /**
@@ -27,8 +13,8 @@ export default class MovieService {
     const [total, result] = await fetchResourceByPage({
       page,
       limit,
-      getCount: fetchMoviesCount, //query to count all movies
-      getResources: fetchAllMovies, //query to get all the movies
+      getCount: movie_queries.fetchMoviesCount, //query to count all movies
+      getResources: movie_queries.fetchAllMovies, //query to get all the movies
     });
 
     return {
@@ -47,8 +33,8 @@ export default class MovieService {
     const [total, result] = await fetchResourceByPage({
       page,
       limit,
-      getCount: searchMovieCount, //query to count all movies
-      getResources: searchMovieQuery, //query to get all the movies
+      getCount: movie_queries.searchMovieCount, //query to count all movies
+      getResources: movie_queries.searchMovieQuery, //query to get all the movies
       params: [`%${title}%`, year, `%${genre}%`],
       countParams: [`%${title}%`, year, `%${genre}%`],
     });
@@ -77,7 +63,7 @@ export default class MovieService {
    */
   static async addMovie(data) {
     const { title, genre, year } = data;
-    return db.none(addMovie, [title, genre, year]);
+    return db.none(movie_queries.addMovie, [title, genre, year]);
   }
 
   /**
@@ -85,8 +71,8 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async removeMovie(params) {
-    const { id } = params;
-    return db.none(removeMovie, [id]);
+    const { movieId } = params;
+    return db.none(movie_queries.removeMovie, [movieId]);
   }
 
   /**
@@ -94,30 +80,28 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async getMovieByID(params) {
-    const { id } = params;
-    return db.oneOrNone(fetchMovieByID, [id]);
+    const { movieId } = params;
+    return db.oneOrNone(movie_queries.fetchMovieByID, [movieId]);
   }
 
   /**
    * rate movie with given ID
    * @memberof MovieService
    */
-  static async rateMovie(data) {
-    let { rating, id } = data;
-    const movie = await db.oneOrNone(fetchMovieByID, [id]);
-    movie.ratingscount++;
-    rating = (Math.round(rating + movie.rating / movie.ratingscount) * 10) / 10;
-    console.log(rating);
-    return db.none(rateMovie, [rating, movie.ratingscount, movie.id]);
+  static async rateMovie(body) {
+    const { movieId, userId, rating } = body;
+    return db.none(movie_queries.rateMovie, [movieId, userId, rating]);
   }
+
   /**
    * review movie with given ID
    * @memberof MovieService
    */
   static async reviewMovie(data) {
     const { review, movie_id, userId } = data;
-    return db.none(reviewMovie, [review, movie_id, userId]);
+    return db.none(movie_queries.reviewMovie, [review, movie_id, userId]);
   }
+
   /**
    * edit title with given ID
    * @memberof MovieService
@@ -125,8 +109,9 @@ export default class MovieService {
   static async editTitle(body, params) {
     const { title } = body;
     const { id } = params;
-    return db.none(editTitle, [title, id]);
+    return db.none(movie_queries.editTitle, [title, id]);
   }
+
   /**
    * edit rating with given ID
    * @memberof MovieService
@@ -134,8 +119,9 @@ export default class MovieService {
   static async editRating(body, params) {
     const { rating } = body;
     const { id } = params;
-    return db.none(editRating, [rating, id]);
+    return db.none(movie_queries.editRating, [rating, id]);
   }
+
   /**
    * edit review with given ID
    * @memberof MovieService
@@ -143,6 +129,23 @@ export default class MovieService {
   static async editReview(body, params) {
     const { review } = body;
     const { id } = params;
-    return db.none(editReview, [review, id]);
+    return db.none(movie_queries.editReview, [review, id]);
+  }
+
+  /**
+   * get all reviews
+   * @memberof MovieService
+   */
+  static async getAllReviews() {
+    return db.manyOrNone(movie_queries.getAllReviews);
+  }
+
+  /**
+   * get reviews by ID
+   * @memberof MovieService
+   */
+  static async getReviewsById(params) {
+    const { movieId } = params;
+    return db.manyOrNone(movie_queries.getReviewsById, [movieId]);
   }
 }

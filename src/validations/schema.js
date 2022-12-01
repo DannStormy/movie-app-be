@@ -2,8 +2,13 @@ import Joi from "joi";
 
 import ValidationHelper from "../utils/helpers/validations";
 
-const { emailCheck, passwordCheck, stringCheck, numberCheck } =
-  ValidationHelper;
+const {
+  emailCheck,
+  passwordCheck,
+  stringCheck,
+  numberCheck,
+  ratingNumberCheck,
+} = ValidationHelper;
 
 export default {
   registerSchema: Joi.object({
@@ -39,6 +44,11 @@ export default {
   }),
   editTitleSchema: Joi.object({
     title: stringCheck("Title"),
+  }),
+  ratingSchema: Joi.object({
+    userId: numberCheck("UserID"),
+    movieId: numberCheck('MovieID'),
+    rating: ratingNumberCheck("Rating"),
   }),
   editRatingSchema: Joi.object({
     rating: numberCheck("Rating"),

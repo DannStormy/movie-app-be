@@ -34,9 +34,8 @@ export default {
       WHERE id = $1
    `,
   rateMovie: `
-      UPDATE movies
-      SET rating = $1, ratingscount = $2, updated_at = NOW()
-      WHERE id = $3;   
+      INSERT INTO ratings(movie_id, user_id, rating)
+      VALUES ($1, $2, $3)
    `,
   removeMovie: `
       DELETE FROM movies
@@ -67,5 +66,14 @@ export default {
     SET review = $1,
     updated_at = NOW()
     WHERE id = $2
+  `,
+  getAllReviews: `
+    SELECT *
+    FROM reviews
+  `,
+  getReviewsById: `
+    SELECT *
+    FROM reviews
+    WHERE movie_id = $1
   `,
 };

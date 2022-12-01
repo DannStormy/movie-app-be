@@ -28,7 +28,7 @@ export default class SuperMiddleware {
       req.user = user;
       return next();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       return error;
     }
   }
@@ -53,7 +53,7 @@ export default class SuperMiddleware {
       }
       return next();
     } catch (error) {
-      console.log(error);
+      logger.error(error);
       return error;
     }
   }

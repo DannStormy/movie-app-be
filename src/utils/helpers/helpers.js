@@ -1,6 +1,8 @@
 import db from "../../config/config";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import adminQueries from "../../queries/admin.queries";
+import userQueries from "../../queries/user.queries";
 
 export default class Helper {
   /**
@@ -14,7 +16,7 @@ export default class Helper {
   static async validateInput(schema, object) {
     return schema.validateAsync(object);
   }
-  
+
   /**
    * hash password
    * @static
@@ -75,9 +77,11 @@ export default class Helper {
    * @returns {String}
    */
   static generateJWT(data) {
-    const token = jwt.sign(data, process.env.JWT_SECRET_KEY, { expiresIn: "1h" });
+    const token = jwt.sign(data, process.env.JWT_SECRET_KEY, {
+      expiresIn: "1h",
+    });
     const refreshToken = jwt.sign(data, process.env.REFRESH_SECRET);
-    return {token, refreshToken}
+    return { token, refreshToken };
   }
 
   /**
@@ -88,5 +92,29 @@ export default class Helper {
    */
   static verifyToken(token, JWT_SECRET) {
     return jwt.verify(token, JWT_SECRET);
+  }
+
+  /**
+   * Account active? Checks if user/admin account is active.
+   * @static
+   */
+  static async isActive(userId, role) {
+    try {
+      if (role === "user") {
+        const { status } = await db.one(userQueries.checkClientStatus, [
+          userId,
+        ]);
+
+        return status;
+      }
+      if (role === "admin") {
+        const { status } = await db.one(adminQueries.findAdminByID, [userId]);
+        console.log("status", userId, role);
+        return status;
+      }
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
   }
 }

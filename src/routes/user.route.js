@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { register, login, resetPassword } from "../controllers/user.js";
+import { register, login, resetPassword } from "../controllers/user.controller.js";
 import UserMiddleware from "../middlewares/user.middleware.js";
 import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";

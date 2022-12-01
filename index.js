@@ -7,6 +7,7 @@ const app = express();
 
 const port = process.env.PORT || 1000;
 
+global.logger = logger;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(router);
