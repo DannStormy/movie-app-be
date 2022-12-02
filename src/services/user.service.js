@@ -2,8 +2,13 @@ import db from "../config/config";
 import Helper from "../utils/helpers/helpers";
 import user_queries from "../queries/user.queries";
 
-const { registerUser, findUserByEmail, addClientStatus, checkClientStatus } =
-  user_queries;
+const {
+  registerUser,
+  findUserByEmail,
+  addClientStatus,
+  checkClientStatus,
+  updatePassword,
+} = user_queries;
 
 export default class UserService {
   /**
@@ -38,5 +43,15 @@ export default class UserService {
    */
   static async fetchClientStatus(id) {
     return db.oneOrNone(checkClientStatus, [id]);
+  }
+
+  /**
+   * update client password
+   * @memberof UserService
+   */
+  static async updatePassword(params, body) {
+    const { id } = params;
+    const { password } = body;
+    return db.oneOrNone(updatePassword, [password, id]);
   }
 }

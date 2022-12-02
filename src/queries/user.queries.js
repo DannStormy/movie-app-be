@@ -18,4 +18,9 @@ export default {
         FROM client_account_status
         WHERE id = $1
     `,
+  updatePassword: `
+      UPDATE users
+      SET password = $1
+      WHERE id = $2
+  `,
 };

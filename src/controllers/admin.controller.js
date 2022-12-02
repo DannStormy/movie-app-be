@@ -1,4 +1,3 @@
-import logger from "../logger";
 import Helper from "../utils/helpers/helpers";
 
 const { generateJWT, isActive } = Helper;

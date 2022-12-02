@@ -18,25 +18,23 @@ router.post(
   checkDetails,
   superControllers.superLogin
 );
+router.use(authenticate);
 router.use(isSuper);
-router.get("/users", authenticate, superControllers.fetchUsers);
+router.get("/users", superControllers.fetchUsers);
 router.post(
   "/create-admin",
   validate(createAdminSchema),
   checkAdminExists,
-  authenticate,
   superControllers.createNewAdmin
 );
 router.put(
   "/setuserstate",
   validate(changeStatusSchema),
-  authenticate,
   superControllers.changeUserStatus
 );
 router.put(
   "/setadminstate",
   validate(changeStatusSchema),
-  authenticate,
   superControllers.changeAdminStatus
 );
 

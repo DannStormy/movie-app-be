@@ -1,12 +1,11 @@
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
 import sendEmail from "../utils/helpers/mailer/mailer";
-import logger from "../logger";
 
-const { addUser, addStatus, getUserByEmail } = UserService;
+const { addUser, addStatus, getUserByEmail, updatePassword } = UserService;
 const { generateJWT, isActive } = Helper;
 
-const register = async (req, res) => {
+export const register = async (req, res) => {
   try {
     const user = await addUser(req.body);
     await addStatus(user.id);
@@ -22,10 +21,10 @@ const register = async (req, res) => {
   }
 };
 
-const login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const data = { userId: req.user.id, role: "user" };
-    const active = await isActive(data.userId, data.role)
+    const active = await isActive(data.userId, data.role);
     if (!active)
       return res.status(401).json({ message: "Account Deactivated" });
     const token = await generateJWT(data);
@@ -40,7 +39,7 @@ const login = async (req, res) => {
   }
 };
 
-const resetPassword = async (req, res) => {
+export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
     const userEmail = await getUserByEmail(email);
@@ -63,4 +62,14 @@ const resetPassword = async (req, res) => {
   }
 };
 
-export { register, login, resetPassword };
+export const resetPassword = async (req, res) => {
+  try {
+    await updatePassword(req.body, req.params);
+    return res.status(200).json({
+      message: "password updated, proceed to login",
+    });
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+};

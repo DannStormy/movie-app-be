@@ -1,6 +1,5 @@
 import Helper from "../utils/helpers/helpers";
 import * as SuperService from "../services/super.service";
-import logger from "../logger";
 
 const { generateJWT } = Helper;
 

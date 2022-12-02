@@ -20,6 +20,9 @@ export default {
   resetPasswordSchema: Joi.object({
     email: emailCheck(),
   }),
+  passwordReset: Joi.object({
+    password: passwordCheck(),
+  }),
   loginSchema: Joi.object({
     email: emailCheck(),
     password: passwordCheck(),
