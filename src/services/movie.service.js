@@ -2,7 +2,7 @@ import db from "../config/config";
 import movie_queries from "../queries/movie.queries";
 import Helper from "../utils/helpers/helpers";
 
-const { fetchResourceByPage, calcPages } = Helper;
+const { fetchResourceByPage, calcPages, getRating } = Helper;
 
 export default class MovieService {
   /**
@@ -81,7 +81,9 @@ export default class MovieService {
    */
   static async getMovieByID(params) {
     const { movieId } = params;
-    return db.oneOrNone(movie_queries.fetchMovieByID, [movieId]);
+    const movie = await db.oneOrNone(movie_queries.fetchMovieByID, [movieId]);
+    const rating = await getRating(movie_queries.getMovieRatings, movieId);
+    return { movie, rating };
   }
 
   /**

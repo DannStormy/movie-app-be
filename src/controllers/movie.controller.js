@@ -19,7 +19,7 @@ export const fetchMovieByID = async (req, res) => {
     const movie = await MovieService.getMovieByID(req.params);
     return res.status(200).json({
       message: `movie with id:${req.params.movieId} fetched`,
-      data: movie,
+      data: movie
     });
   } catch (error) {
     logger.error(error);
@@ -118,7 +118,6 @@ export const reviewEdit = async (req, res) => {
 };
 
 export const fetchReviewsById = async (req, res) => {
-
   try {
     const reviews = await MovieService.getReviewsById(req.params);
     return res.status(200).json({

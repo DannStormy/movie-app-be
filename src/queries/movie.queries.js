@@ -76,4 +76,9 @@ export default {
     FROM reviews
     WHERE movie_id = $1
   `,
+  getMovieRatings: `
+    SELECT rating
+    FROM ratings
+    WHERE movie_id = $1
+  `,
 };

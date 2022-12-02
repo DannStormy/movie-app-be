@@ -117,4 +117,25 @@ export default class Helper {
       return error;
     }
   }
+
+  /**
+   * calculate movie rating.
+   * @static
+   */
+  static async getRating(query, movieId) {
+    try {
+      const allRatings = [];
+      const ratings = await db.manyOrNone(query, [movieId]);
+      ratings.map((i) => {
+        allRatings.push(i.rating);
+      });
+      const average = allRatings.reduce(function (a, b) {
+        return a + b / allRatings.length.toFixed(2);
+      }, 0);
+      return average;
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
 }
