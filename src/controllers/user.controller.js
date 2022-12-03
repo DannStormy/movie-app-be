@@ -3,13 +3,14 @@ import UserService from "../services/user.service";
 import sendEmail from "../utils/helpers/mailer/mailer";
 
 const { addUser, addStatus, getUserByEmail, updatePassword } = UserService;
-const { generateJWT, isActive } = Helper;
+const { generateJWT } = Helper;
 
 export const register = async (req, res) => {
   try {
+    req.body.role_id = 3;
     const user = await addUser(req.body);
     await addStatus(user.id);
-    delete req.body.password;
+    delete user.password;
     await sendEmail(req.body.email, "Welcome", "You successfully registered");
     return res.status(200).json({
       message: "register successful",
@@ -23,11 +24,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const data = { userId: req.user.id, role: "user" };
-    const active = await isActive(data.userId, data.role);
-    if (!active)
-      return res.status(401).json({ message: "Account Deactivated" });
-    const token = await generateJWT(data);
+    const data = { userId: req.user.id, role: req.user.role_id };
+    const token = generateJWT(data);
     delete req.user.password;
     return res.status(200).json({
       message: "login successful",
@@ -49,8 +47,8 @@ export const forgotPassword = async (req, res) => {
         message: "No user with this email",
       });
     }
-    const data = { userId: userEmail.id, role: "user" };
-    const sessionToken = await generateJWT(data);
+    // use generated random string
+    const sessionToken = await generateJWT(userEmail.id);
     const link = `${process.env.HOST}/${email}/${sessionToken.token}`;
     await sendEmail(email, "Forgot Password", link);
     return res.status(200).json({

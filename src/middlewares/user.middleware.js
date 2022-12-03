@@ -16,7 +16,8 @@ export default class UserMiddleware {
   static async checkUserExists(req, res, next) {
     try {
       const { email } = req.body;
-      const user = await getUserByEmail(email);
+      console.log(req.body);
+      const user = await getUserByEmail(email.trim().toLowerCase());
       if (user) {
         return res
           .status(409)
@@ -55,6 +56,9 @@ export default class UserMiddleware {
           .status(400)
           .json({ status: "bad request", message: "wrong password" });
       }
+      const active = await Helper.isActive(user.id, user.role_id);
+      if (!active)
+        return res.status(401).json({ message: "Account Deactivated" });
       req.user = user;
       return next();
     } catch (error) {

@@ -12,8 +12,8 @@ export default {
     FROM users
     `,
   createAdmin: `
-    INSERT INTO admin(name, email)
-    VALUES ($1, $2)
+    INSERT INTO admin(name, email, role_id)
+    VALUES ($1, $2, $3)
   `,
   findUserByID: `
         SELECT * FROM client_account_status
@@ -27,6 +27,6 @@ export default {
   setAdminStatus: `
         UPDATE admin
         SET status = $1
-        WHERE id = $2;
+        WHERE id = $2 AND role_id = 2;
 `,
 };

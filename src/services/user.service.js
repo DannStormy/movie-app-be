@@ -16,9 +16,10 @@ export default class UserService {
    * @memberof UserService
    */
   static async addUser(data) {
-    let { firstName, lastName, email, password } = data;
-    password = await Helper.generatePasswordHash(password);
-    return db.one(registerUser, [firstName, lastName, email, password]);
+    let { firstName, lastName, email, password, role_id } = data;
+    email = email.trim().toLowerCase()
+    password = Helper.generatePasswordHash(password);
+    return db.one(registerUser, [firstName, lastName, email, password, role_id]);
   }
 
   /**

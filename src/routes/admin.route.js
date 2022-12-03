@@ -1,14 +1,42 @@
 import { Router } from "express";
-import adminLogin from "../controllers/admin.controller";
+import * as adminControllers from "../controllers/admin.controller.js";
+import AccessControlMiddleware from "../middlewares/accessControl";
 import AdminMiddleware from "../middlewares/admin.middleware";
 import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";
 
 const router = Router();
-const { validate } = AuthMiddleware;
-const { checkDetails } = AdminMiddleware;
-const { loginSchema } = schema;
 
-router.post("/login", validate(loginSchema), checkDetails, adminLogin);
+const { isSuper } = AccessControlMiddleware;
+const { loginSchema, createAdminSchema, changeStatusSchema } = schema;
+const { authenticate, validate } = AuthMiddleware;
+
+router.post(
+  "/login",
+  validate(loginSchema),
+  AdminMiddleware.checkDetails,
+  adminControllers.adminLogin
+);
+router.use([authenticate, isSuper]);
+router.get("/users", adminControllers.fetchUsers);
+//send link to admin to reset password after creation
+router.post(
+  "/create-admin",
+  validate(createAdminSchema),
+  AdminMiddleware.checkAdminExists,
+  adminControllers.createNewAdmin
+);
+router.put(
+  "/accounts/user/:userId/toggle-status",
+  validate(changeStatusSchema),
+  AdminMiddleware.checkUserAccount,
+  adminControllers.changeUserStatus
+);
+router.put(
+  "/accounts/:adminId/toggle-status",
+  validate(changeStatusSchema),
+  AdminMiddleware.checkAdminAccount,
+  adminControllers.changeAdminStatus
+);
 
 export default router;

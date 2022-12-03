@@ -2,7 +2,6 @@ import MovieService from "../services/movie.service";
 
 export const fetchMovies = async (req, res) => {
   try {
-    logger.info("All queries", req.query);
     const movies = await MovieService.getMovies(req.query);
     return res.status(200).json({
       message: "movies returned",
@@ -16,7 +15,7 @@ export const fetchMovies = async (req, res) => {
 
 export const fetchMovieByID = async (req, res) => {
   try {
-    const movie = await MovieService.getMovieByID(req.params);
+    const movie = await MovieService.getMovieByID(req.params); // parse movieId directly
     return res.status(200).json({
       message: `movie with id:${req.params.movieId} fetched`,
       data: movie
@@ -42,7 +41,7 @@ export const movieRating = async (req, res) => {
 export const addNewMovie = async (req, res) => {
   try {
     await MovieService.addMovie(req.body);
-    return res.status(200).json({
+    return res.status(200).json({ // all create endpoints should return 201 on success
       message: "movie added",
       data: req.body,
     });
@@ -83,7 +82,7 @@ export const movieReview = async (req, res) => {
 
 export const titleEdit = async (req, res) => {
   try {
-    await MovieService.editTitle(req.body, req.params);
+    await MovieService.editTitle(req.body, req.params); // use movieId
     return res.status(200).json({
       message: `title changed to ${req.body.title}`,
     });

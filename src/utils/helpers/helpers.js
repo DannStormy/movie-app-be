@@ -23,9 +23,8 @@ export default class Helper {
    * @memberof Helper
    * @returns {string | number } - generate password hash.
    */
-  static async generatePasswordHash(password) {
-    const hash = await bcrypt.hashSync(password, 10);
-    return hash;
+  static generatePasswordHash(password) {
+    return bcrypt.hashSync(password, 10);
   }
 
   static async fetchResourceByPage({
@@ -100,18 +99,17 @@ export default class Helper {
    */
   static async isActive(userId, role) {
     try {
-      if (role === "user") {
+      if (role === 3) {
         const { status } = await db.one(userQueries.checkClientStatus, [
           userId,
         ]);
-
         return status;
       }
-      if (role === "admin") {
+      if (role === 2) {
         const { status } = await db.one(adminQueries.findAdminByID, [userId]);
-        console.log("status", userId, role);
         return status;
       }
+      return true;
     } catch (error) {
       logger.error(error);
       return error;

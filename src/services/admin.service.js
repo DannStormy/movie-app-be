@@ -7,10 +7,10 @@ const { fetchResourceByPage, calcPages } = Helper;
 
 const { findAdminByEmail, findAdminByID } = adminQueries;
 
-export default class SuperService {
+export default class AdminService {
   /**
    * get super admin by email
-   * @memberof SuperService
+   * @memberof AdminService
    */
   static async findSuperByEmail(email) {
     return db.oneOrNone(super_queries.findSuperByEmail, [email]);
@@ -18,7 +18,7 @@ export default class SuperService {
 
   /**
    * get admin by email
-   * @memberof SuperService
+   * @memberof AdminService
    */
   static async findAdminByEmail(email) {
     return db.oneOrNone(findAdminByEmail, [email]);
@@ -26,7 +26,7 @@ export default class SuperService {
 
   /**
    * fetch all users
-   * @memberof SuperService
+   * @memberof AdminService
    */
   static async fetchAllUsers({ page = 1, limit = 10 }) {
     const [total, result] = await fetchResourceByPage({
@@ -45,15 +45,16 @@ export default class SuperService {
 
   /**
    * create admin
-   * @memberof SuperService
+   * @memberof AdminService
    */
   static async createAdmin(data) {
-    const { name, email } = data;
-    return db.none(super_queries.createAdmin, [name, email]);
+    let { name, email, role_id } = data;
+    email = email.trim().toLowerCase();
+    return db.none(super_queries.createAdmin, [name, email, role_id]);
   }
   /**
    * fetch admin by id
-   * @memberof SuperService
+   * @memberof AdminService
    */
   static async fetchAdmin(id) {
     return db.oneOrNone(findAdminByID, [id]);
@@ -61,7 +62,7 @@ export default class SuperService {
 
   /**
    * fetch user by id
-   * @memberof SuperService
+   * @memberof AdminService
    */
   static async fetchUser(id) {
     return db.oneOrNone(super_queries.findUserByID, [id]);
@@ -69,19 +70,17 @@ export default class SuperService {
 
   /**
    * change user account status
-   * @memberof SuperService
+   * @memberof AdminService
    */
-  static async setUserStatus(data) {
-    const { id, status } = data;
+  static async setUserStatus(status, id) {
     return db.none(super_queries.setClientStatus, [status, id]);
   }
 
   /**
    * change admin account status
-   * @memberof SuperService
+   * @memberof AdminService
    */
-  static async setAdminStatus(data) {
-    const { id, status } = data;
+  static async setAdminStatus(status, id) {
     return db.none(super_queries.setAdminStatus, [status, id]);
   }
 }

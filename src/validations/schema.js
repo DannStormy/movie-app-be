@@ -29,6 +29,7 @@ export default {
   }),
   createAdminSchema: Joi.object({
     name: stringCheck("name"),
+    role_id: numberCheck("role_id"),
     email: emailCheck(),
   }),
   addMovieSchema: Joi.object({
@@ -37,20 +38,19 @@ export default {
     year: numberCheck(),
   }),
   changeStatusSchema: Joi.object({
-    id: numberCheck(),
     status: Joi.boolean(),
   }),
   reviewMovieSchema: Joi.object({
     movie_id: numberCheck("MovieID"),
     userId: numberCheck("UserID"),
-    review: stringCheck("Review"),
+    review: stringCheck("Review"), // not required
   }),
   editTitleSchema: Joi.object({
     title: stringCheck("Title"),
   }),
   ratingSchema: Joi.object({
     userId: numberCheck("UserID"),
-    movieId: numberCheck('MovieID'),
+    movieId: numberCheck("MovieID"),
     rating: ratingNumberCheck("Rating"),
   }),
   editRatingSchema: Joi.object({
@@ -60,3 +60,5 @@ export default {
     review: stringCheck("Review"),
   }),
 };
+
+// add required to required fields

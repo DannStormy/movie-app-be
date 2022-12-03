@@ -1,7 +1,7 @@
 export default {
   registerUser: `
-        INSERT INTO users (firstName, lastName, email, password)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO users (firstName, lastName, email, password, role_id)
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING *
     `,
   findUserByEmail: `

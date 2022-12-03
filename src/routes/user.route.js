@@ -11,8 +11,7 @@ import schema from "../validations/schema.js";
 
 const router = Router();
 
-const { registerSchema, loginSchema, resetPasswordSchema, passwordReset } =
-  schema;
+const { registerSchema, loginSchema, resetPasswordSchema, passwordReset } = schema;
 const { validate } = AuthMiddleware;
 const { checkUserDetails, checkUserExists } = UserMiddleware;
 

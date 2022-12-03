@@ -61,7 +61,8 @@ class AccessControlMiddleware {
    */
   static isSuper(req, res, next) {
     const { role } = req.data;
-    if (role !== "super")
+    console.log(req.data)
+    if (role !== 1)
       return res.status(403).send({ message: "Access denied" });
     next();
   }
