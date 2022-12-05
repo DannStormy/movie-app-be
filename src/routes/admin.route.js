@@ -8,7 +8,8 @@ import schema from "../validations/schema.js";
 const router = Router();
 
 const { isSuper } = AccessControlMiddleware;
-const { loginSchema, createAdminSchema, changeStatusSchema } = schema;
+const { loginSchema, createAdminSchema, changeStatusSchema, passwordReset } =
+  schema;
 const { authenticate, validate } = AuthMiddleware;
 
 router.post(
@@ -16,6 +17,12 @@ router.post(
   validate(loginSchema),
   AdminMiddleware.checkDetails,
   adminControllers.adminLogin
+);
+router.post(
+  "/resetpassword/:email/:resetString",
+  validate(passwordReset),
+  AdminMiddleware.checkResetPasswordString,
+  adminControllers.adminResetPassword
 );
 router.use([authenticate, isSuper]);
 router.get("/users", adminControllers.fetchUsers);

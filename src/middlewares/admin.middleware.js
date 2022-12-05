@@ -122,4 +122,35 @@ export default class AdminMiddleware {
       return error;
     }
   }
+
+  /**
+   * checks reset password string
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+
+  static async checkResetPasswordString(req, res, next) {
+    try {
+      const dbString = await AdminService.findAdminByEmail(req.params.email);
+      if (!dbString.password_reset_string) {
+        return Response.errorResponse(req, res, {
+          status: 404,
+          message: apiMessage.RESOURCE_NOT_FOUND("reset password string"),
+        });
+      }
+      if (dbString.password_reset_string != req.params.resetString) {
+        return Response.errorResponse(req, res, {
+          status: 400,
+          message: "reset string's don't match",
+        });
+      }
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
 }

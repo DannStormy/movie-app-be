@@ -22,9 +22,9 @@ const sendEmail = async (email, subject, text) => {
       subject: subject,
       text: text,
     });
-    logger.log("email sent sucessfully");
+    logger.info("email sent sucessfully");
   } catch (error) {
-    logger.log(error, "email not sent");
+    logger.error(error, "email not sent");
   }
 };
 

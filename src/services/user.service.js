@@ -17,9 +17,15 @@ export default class UserService {
    */
   static async addUser(data) {
     let { firstName, lastName, email, password, role_id } = data;
-    email = email.trim().toLowerCase()
+    email = email.trim().toLowerCase();
     password = Helper.generatePasswordHash(password);
-    return db.one(registerUser, [firstName, lastName, email, password, role_id]);
+    return db.one(registerUser, [
+      firstName,
+      lastName,
+      email,
+      password,
+      role_id,
+    ]);
   }
 
   /**
@@ -50,9 +56,15 @@ export default class UserService {
    * update client password
    * @memberof UserService
    */
-  static async updatePassword(params, body) {
-    const { id } = params;
-    const { password } = body;
-    return db.oneOrNone(updatePassword, [password, id]);
+  static async updatePassword(password, email) {
+    password = Helper.generatePasswordHash(password);
+    return db.oneOrNone(updatePassword, [password, email]);
+  }
+  /**
+   *  set password reset string
+   * @memberof UserService
+   */
+  static async passwordResetString(string, userId) {
+    return db.none(user_queries.updatePasswordResetString, [string, userId]);
   }
 }

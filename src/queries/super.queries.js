@@ -14,6 +14,7 @@ export default {
   createAdmin: `
     INSERT INTO admin(name, email, role_id)
     VALUES ($1, $2, $3)
+    RETURNING *
   `,
   findUserByID: `
         SELECT * FROM client_account_status

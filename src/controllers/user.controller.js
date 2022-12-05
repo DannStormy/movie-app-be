@@ -1,3 +1,4 @@
+import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
 import sendEmail from "../utils/helpers/mailer/mailer";
@@ -52,9 +53,9 @@ export const forgotPassword = async (req, res) => {
         message: apiMessage.RESOURCE_NOT_FOUND("user"),
       });
     }
-    // use generated random string
-    const sessionToken = await generateJWT(userEmail.id);
-    const link = `${process.env.HOST}/${email}/${sessionToken.token}`;
+    const randomString = randomstring.generate();
+    await UserService.passwordResetString(randomString, userEmail.id);
+    const link = `${process.env.HOST}/${email}/${randomString}`;
     await sendEmail(email, "Forgot Password", link);
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
@@ -68,7 +69,12 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    await updatePassword(req.body, req.params);
+    await updatePassword(req.body.password, req.params.email);
+    await sendEmail(
+      req.params.email,
+      "Password Changed",
+      `Your password has been reset. If you did not initiate this action, request help @`
+    );
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_SUCCESS,
       code: 200,

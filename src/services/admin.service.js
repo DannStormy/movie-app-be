@@ -50,7 +50,7 @@ export default class AdminService {
   static async createAdmin(data) {
     let { name, email, role_id } = data;
     email = email.trim().toLowerCase();
-    return db.none(super_queries.createAdmin, [name, email, role_id]);
+    return db.oneOrNone(super_queries.createAdmin, [name, email, role_id]);
   }
   /**
    * fetch admin by id
@@ -82,5 +82,21 @@ export default class AdminService {
    */
   static async setAdminStatus(status, id) {
     return db.none(super_queries.setAdminStatus, [status, id]);
+  }
+
+  /**
+   *  admin reset password
+   * @memberof AdminService
+   */
+  static async adminResetPassword(password, email) {
+    password = Helper.generatePasswordHash(password);
+    return db.none(adminQueries.adminResetPassword, [password, email]);
+  }
+  /**
+   *  set password reset string
+   * @memberof AdminService
+   */
+  static async passwordResetString(string, adminId) {
+    return db.none(adminQueries.updatePasswordResetString, [string, adminId]);
   }
 }
