@@ -1,6 +1,7 @@
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
 import sendEmail from "../utils/helpers/mailer/mailer";
+import { Response, apiMessage } from "../utils/helpers/constants";
 
 const { addUser, addStatus, getUserByEmail, updatePassword } = UserService;
 const { generateJWT } = Helper;
@@ -11,10 +12,14 @@ export const register = async (req, res) => {
     const user = await addUser(req.body);
     await addStatus(user.id);
     delete user.password;
-    await sendEmail(req.body.email, "Welcome", "You successfully registered");
-    return res.status(200).json({
-      message: "register successful",
-      data: user,
+    await sendEmail(
+      req.body.email,
+      "Welcome",
+      "You successfully registered to MovieApp.io"
+    );
+    Response.successResponse(res, {
+      code: 201,
+      message: apiMessage.RESOURCE_CREATE_SUCCESS("client"),
     });
   } catch (error) {
     logger.error(error);
@@ -27,9 +32,9 @@ export const login = async (req, res) => {
     const data = { userId: req.user.id, role: req.user.role_id };
     const token = generateJWT(data);
     delete req.user.password;
-    return res.status(200).json({
-      message: "login successful",
+    Response.successResponse(res, {
       data: { ...token, user: req.user },
+      message: apiMessage.LOGIN_USER_SUCCESSFULLY,
     });
   } catch (error) {
     logger.error(error);
@@ -42,17 +47,18 @@ export const forgotPassword = async (req, res) => {
   try {
     const userEmail = await getUserByEmail(email);
     if (!userEmail) {
-      return res.status(401).json({
-        status: "Failed",
-        message: "No user with this email",
+      return Response.errorResponse(req, res, {
+        status: 404,
+        message: apiMessage.RESOURCE_NOT_FOUND("user"),
       });
     }
     // use generated random string
     const sessionToken = await generateJWT(userEmail.id);
     const link = `${process.env.HOST}/${email}/${sessionToken.token}`;
     await sendEmail(email, "Forgot Password", link);
-    return res.status(200).json({
-      message: "password reset link sent to your email account",
+    return Response.successResponse(res, {
+      message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
+      code: 200,
     });
   } catch (error) {
     logger.error(error);
@@ -63,8 +69,9 @@ export const forgotPassword = async (req, res) => {
 export const resetPassword = async (req, res) => {
   try {
     await updatePassword(req.body, req.params);
-    return res.status(200).json({
-      message: "password updated, proceed to login",
+    return Response.successResponse(res, {
+      message: apiMessage.RESET_PASSWORD_SUCCESS,
+      code: 200,
     });
   } catch (error) {
     logger.error(error);

@@ -1,5 +1,6 @@
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
+import { Response, apiMessage } from "../utils/helpers/constants";
 
 const { getUserByEmail } = UserService;
 
@@ -19,13 +20,14 @@ export default class UserMiddleware {
       console.log(req.body);
       const user = await getUserByEmail(email.trim().toLowerCase());
       if (user) {
-        return res
-          .status(409)
-          .json({ status: "conflict", message: "user exists" });
+        return Response.errorResponse(req, res, {
+          status: 409,
+          message: apiMessage.RESOURCE_ALREADY_EXISTS("admin"),
+        });
       }
       return next();
     } catch (error) {
-      console.log(error);
+      logger.log(error);
       return error;
     }
   }
@@ -43,22 +45,25 @@ export default class UserMiddleware {
       const { email, password } = req.body;
       const user = await getUserByEmail(email);
       if (!user) {
-        return res
-          .status(400)
-          .json({ status: "bad request", message: "user does not exist" });
+        return Response.errorResponse(req, res, {
+          status: 400,
+          message: apiMessage.INVALID_CREDENTIALS,
+        });
       }
-      const passwordMatch = await Helper.comparePasswordHash(
-        password,
-        user.password
-      );
+      const passwordMatch = Helper.comparePasswordHash(password, user.password);
       if (!passwordMatch) {
-        return res
-          .status(400)
-          .json({ status: "bad request", message: "wrong password" });
+        return Response.errorResponse(req, res, {
+          status: 400,
+          message: apiMessage.PASSWORD_INCORRECT,
+        });
       }
       const active = await Helper.isActive(user.id, user.role_id);
-      if (!active)
-        return res.status(401).json({ message: "Account Deactivated" });
+      if (!active) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: apiMessage.ACCOUNT_INACTIVE,
+        });
+      }
       req.user = user;
       return next();
     } catch (error) {

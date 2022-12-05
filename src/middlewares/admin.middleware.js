@@ -1,5 +1,6 @@
 import Helper from "../utils/helpers/helpers";
 import AdminService from "../services/admin.service";
+import { Response, apiMessage } from "../utils/helpers/constants";
 
 export default class AdminMiddleware {
   /**
@@ -15,18 +16,24 @@ export default class AdminMiddleware {
       const { email, password } = req.body;
       const admin = await AdminService.findAdminByEmail(email);
       if (!admin) {
-        return res
-          .status(400)
-          .json({ status: "bad request", message: "user does not exist" });
+        return Response.errorResponse(req, res, {
+          status: 400,
+          message: apiMessage.INVALID_CREDENTIALS,
+        });
       }
       if (password !== admin.password) {
-        return res
-          .status(400)
-          .json({ status: "bad request", message: "wrong password" });
+        return Response.errorResponse(req, res, {
+          status: 400,
+          message: apiMessage.PASSWORD_INCORRECT,
+        });
       }
       const active = await Helper.isActive(admin.id, admin.role_id);
-      if (!active)
-        return res.status(401).json({ message: "Account Deactivated" });
+      if (!active) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: apiMessage.ACCOUNT_INACTIVE,
+        });
+      }
       req.user = admin;
       return next();
     } catch (error) {
@@ -50,9 +57,10 @@ export default class AdminMiddleware {
       email = email.trim().toLowerCase();
       const user = await AdminService.findAdminByEmail(email);
       if (user) {
-        return res
-          .status(409)
-          .json({ status: "conflict", message: "admin exists" });
+        return Response.errorResponse(req, res, {
+          status: 409,
+          message: apiMessage.RESOURCE_ALREADY_EXISTS("admin"),
+        });
       }
       return next();
     } catch (error) {
@@ -74,13 +82,15 @@ export default class AdminMiddleware {
     try {
       const admin = await AdminService.fetchAdmin(req.params.adminId);
       if (!admin)
-        return res.status(400).json({
-          message: `Admin account with id:${req.params.adminId} not found`,
+        return Response.errorResponse(req, res, {
+          status: 404,
+          message: apiMessage.RESOURCE_NOT_FOUND("admin"),
         });
       if (admin.role_id === 1) {
-        return res
-          .status(400)
-          .json({ message: `Super Admin can't be deactivated` });
+        return Response.errorResponse(req, res, {
+          status: 403,
+          message: apiMessage.ROLE_NOT_SUFFICIENT,
+        });
       }
       return next();
     } catch (error) {
@@ -100,10 +110,12 @@ export default class AdminMiddleware {
   static async checkUserAccount(req, res, next) {
     try {
       const user = await AdminService.fetchUser(req.params.userId);
-      if (!user)
-        return res.status(400).json({
-          message: `User account with id:${req.params.userId} not found`,
+      if (!user) {
+        return Response.errorResponse(req, res, {
+          status: 404,
+          message: apiMessage.RESOURCE_NOT_FOUND("admin"),
         });
+      }
       return next();
     } catch (error) {
       logger.error(error);

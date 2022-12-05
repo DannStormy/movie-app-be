@@ -1,3 +1,4 @@
+import { Response, apiMessage } from "../utils/helpers/constants";
 /**
  * A collection of middleware methods used for access control
  * of requests through protected routes.
@@ -15,23 +16,11 @@ class AccessControlMiddleware {
    */
   static isUser(req, res, next) {
     const { role } = req.data;
-    if (role !== "user") {
-      return res.status(403).send({ message: "Access denied" });
-    }
-    next();
-  }
-  /**
-   * admin/superadmin middleware guard.
-   * @param { Object } req - The request from the endpoint.
-   * @param { Object } res - The response returned by the method.
-   * @param { function } next - Calls the next handle.
-   * @returns { JSON | Null } - Returns error response if validation fails or Null if otherwise.
-   * @memberof accessControl Middleware
-   */
-  static isBiUser(req, res, next) {
-    const { role } = req.data;
-    if (role !== "admin" && role !== "super") {
-      return res.status(403).send({ message: "Access denied" });
+    if (role !== 3) {
+      return Response.errorResponse(req, res, {
+        status: 403,
+        message: apiMessage.ROLE_NOT_SUFFICIENT,
+      });
     }
     next();
   }
@@ -46,8 +35,12 @@ class AccessControlMiddleware {
    */
   static isAdmin(req, res, next) {
     const { role } = req.data;
-    if (role !== "admin")
-      return res.status(403).send({ message: "Access denied" });
+    if (role === 3) {
+      return Response.errorResponse(req, res, {
+        status: 403,
+        message: apiMessage.ROLE_NOT_SUFFICIENT,
+      });
+    }
     next();
   }
 
@@ -61,9 +54,12 @@ class AccessControlMiddleware {
    */
   static isSuper(req, res, next) {
     const { role } = req.data;
-    console.log(req.data)
-    if (role !== 1)
-      return res.status(403).send({ message: "Access denied" });
+    if (role !== 1) {
+      return Response.errorResponse(req, res, {
+        status: 403,
+        message: apiMessage.ROLE_NOT_SUFFICIENT,
+      });
+    }
     next();
   }
 }

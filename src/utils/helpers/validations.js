@@ -36,7 +36,7 @@ export default class ValidationHelper {
   }
 
   /**
-   * validates strings
+   * validates required strings
    * @static
    * @memberof ValidationHelper
    * @returns {Boolean}
@@ -55,6 +55,7 @@ export default class ValidationHelper {
         "string.empty": `${param} cannot be an empty field`,
       });
   }
+
   /**
    * validates numbers
    * @static
@@ -71,24 +72,22 @@ export default class ValidationHelper {
       });
   }
 
-    /**
+  /**
    * It validates a number.
    * @static
    * @memberof ValidationHelper
    * @returns {Boolean}
    */
-     static ratingNumberCheck(param, min = 0, max = 10) {
-      return Joi
-        .number()
-        .required()
-        .min(min)
-        .messages({
-          'any.required': `${param} is a required field`,
-          'number.base': `${param} must be a number`,
-          'number.empty': `${param} cannot be an empty field`,
-          'number.min': `${param} can not be lesser than ${min}`,
-          'number.max': `${param} can not be more than ${max}`
-        });
-    }
-  
+  static ratingNumberCheck(param, min = 0, max = 10) {
+    return Joi.number()
+      .required()
+      .min(min)
+      .messages({
+        "any.required": `${param} is a required field`,
+        "number.base": `${param} must be a number`,
+        "number.empty": `${param} cannot be an empty field`,
+        "number.min": `${param} can not be lesser than ${min}`,
+        "number.max": `${param} can not be more than ${max}`,
+      });
+  }
 }

@@ -67,11 +67,10 @@ export default class MovieService {
   }
 
   /**
-   * delete movie
+   * soft delete movie
    * @memberof MovieService
    */
-  static async removeMovie(params) {
-    const { movieId } = params;
+  static async removeMovie(movieId) {
     return db.none(movie_queries.removeMovie, [movieId]);
   }
 
@@ -79,75 +78,41 @@ export default class MovieService {
    * returns movie with given ID
    * @memberof MovieService
    */
-  static async getMovieByID(params) {
-    const { movieId } = params;
+  static async getMovieByID(movieId) {
     const movie = await db.oneOrNone(movie_queries.fetchMovieByID, [movieId]);
     const rating = await getRating(movie_queries.getMovieRatings, movieId);
     return { movie, rating };
   }
 
   /**
+   * get movie rating
+   * @memberof MovieService
+   */
+  static async getMovieRating(movieId, userId) {
+    return db.oneOrNone(movie_queries.getRating, [movieId, userId]);
+  }
+  /**
    * rate movie with given ID
    * @memberof MovieService
    */
-  static async rateMovie(body) {
-    const { movieId, userId, rating } = body;
-    return db.none(movie_queries.rateMovie, [movieId, userId, rating]);
-  }
-
-  /**
-   * review movie with given ID
-   * @memberof MovieService
-   */
-  static async reviewMovie(data) {
-    const { review, movie_id, userId } = data;
-    return db.none(movie_queries.reviewMovie, [review, movie_id, userId]);
+  static async rateMovie(movieId, userId, body) {
+    const { rating, review } = body;
+    return db.none(movie_queries.rateMovie, [movieId, userId, rating, review]);
   }
 
   /**
    * edit title with given ID
    * @memberof MovieService
    */
-  static async editTitle(body, params) {
-    const { title } = body;
-    const { id } = params;
-    return db.none(movie_queries.editTitle, [title, id]);
+  static async editTitle(title, movieId) {
+    return db.none(movie_queries.editTitle, [title, movieId]);
   }
 
   /**
    * edit rating with given ID
    * @memberof MovieService
    */
-  static async editRating(body, params) {
-    const { rating } = body;
-    const { id } = params;
-    return db.none(movie_queries.editRating, [rating, id]);
-  }
-
-  /**
-   * edit review with given ID
-   * @memberof MovieService
-   */
-  static async editReview(body, params) {
-    const { review } = body;
-    const { id } = params;
-    return db.none(movie_queries.editReview, [review, id]);
-  }
-
-  /**
-   * get all reviews
-   * @memberof MovieService
-   */
-  static async getAllReviews() {
-    return db.manyOrNone(movie_queries.getAllReviews);
-  }
-
-  /**
-   * get reviews by ID
-   * @memberof MovieService
-   */
-  static async getReviewsById(params) {
-    const { movieId } = params;
-    return db.manyOrNone(movie_queries.getReviewsById, [movieId]);
+  static async editRating(rating, review, movieId, userId) {
+    return db.any(movie_queries.editRating, [rating, review, movieId, userId]);
   }
 }

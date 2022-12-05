@@ -2,12 +2,14 @@ export default {
   fetchAllMovies: `
       SELECT *
       FROM movies
+      WHERE deleted = false
       ORDER BY id ASC
       OFFSET $1 LIMIT $2
     `,
   fetchMoviesCount: `
       SELECT COUNT(*)
       FROM movies
+      WHERE deleted = false
     `,
   searchMovieCount: `
       SELECT count(*)
@@ -16,7 +18,8 @@ export default {
       ILIKE $1 
       OR year = $2
       OR genre 
-      ILIKE $3
+      ILIKE $3 
+      AND deleted = false
    `,
   searchMovieQuery: `
       SELECT *
@@ -29,55 +32,46 @@ export default {
       OFFSET $1 LIMIT $2
    `,
   fetchMovieByID: `
-      SELECT *
-      FROM movies
-      WHERE id = $1
+    SELECT id, title, genre, year
+    FROM movies
+    WHERE id = $1
+    AND deleted = false
    `,
   rateMovie: `
-      INSERT INTO ratings(movie_id, user_id, rating)
-      VALUES ($1, $2, $3)
+      INSERT INTO ratings(movie_id, user_id, rating, review)
+      VALUES ($1, $2, $3, $4)
    `,
   removeMovie: `
-      DELETE FROM movies
+      UPDATE movies
+      SET deleted = true,
+      updated_at = NOW()
       WHERE id = $1
       `,
   addMovie: `
       INSERT INTO movies(title, genre, year)
       VALUES ($1, $2, $3)
     `,
-  reviewMovie: `
-      INSERT INTO reviews(review, movie_id, user_id)
-      VALUES ($1, $2, $3)
-  `,
   editTitle: `
     UPDATE movies
     SET title = $1,
     updated_at = NOW()
     WHERE id = $2
   `,
+  getRating: `
+    SELECT * FROM ratings
+    WHERE movie_id = $1 
+    AND user_id = $2
+  `,
   editRating: `
-    UPDATE movies
-    SET rating = $1,
+    UPDATE ratings 
+    SET rating = COALESCE (NULLIF($1, 0), rating),
+    review = COALESCE (NULLIF($2, ''), review),
     updated_at = NOW()
-    WHERE id = $2
-  `,
-  editReview: `
-    UPDATE reviews
-    SET review = $1,
-    updated_at = NOW()
-    WHERE id = $2
-  `,
-  getAllReviews: `
-    SELECT *
-    FROM reviews
-  `,
-  getReviewsById: `
-    SELECT *
-    FROM reviews
-    WHERE movie_id = $1
+    WHERE movie_id = $3 AND user_id = $4
+    RETURNING *;
   `,
   getMovieRatings: `
-    SELECT rating
+    SELECT rating, review
     FROM ratings
     WHERE movie_id = $1
   `,

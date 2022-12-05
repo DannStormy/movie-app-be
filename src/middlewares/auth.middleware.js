@@ -1,5 +1,5 @@
 import Helper from "../utils/helpers/helpers";
-import logger from "../logger";
+import { Response, apiMessage } from "../utils/helpers/constants";
 
 export default class AuthMiddleware {
   /**
@@ -72,8 +72,9 @@ export default class AuthMiddleware {
   static async authenticate(req, res, next) {
     const token = AuthMiddleware.checkToken(req);
     if (!token) {
-      return res.json({
-        message: "Token required",
+      return Response.errorResponse(req, res, {
+        status: 422,
+        message: apiMessage.TOKEN_ERROR,
       });
     }
     try {
@@ -82,8 +83,12 @@ export default class AuthMiddleware {
         : Helper.verifyToken(token, process.env.JWT_SECRET_KEY);
       req.data = decoded;
       const active = await Helper.isActive(req.data.userId, req.data.role);
-      if (active === false)
-        return res.status(401).json({ message: "Account Deactivated" });
+      if (active === false) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: apiMessage.ACCOUNT_INACTIVE,
+        });
+      }
       next();
     } catch (err) {
       logger.error(err);

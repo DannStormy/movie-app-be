@@ -77,7 +77,7 @@ export default class Helper {
    */
   static generateJWT(data) {
     const token = jwt.sign(data, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1h",
+      expiresIn: "1d",
     });
     const refreshToken = jwt.sign(data, process.env.REFRESH_SECRET);
     return { token, refreshToken };
@@ -117,20 +117,37 @@ export default class Helper {
   }
 
   /**
+   * Generates log for api errors.
+   * @static
+   * @private
+   * @param {object} error - The API error object.
+   * @param {Request} req - Request object.
+   * @memberof Helpers
+   * @returns {String} - It returns null.
+   */
+  static apiErrLogMessager(error, req) {
+    logger.error(
+      `${error.name} - ${error.status} - ${error.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`
+    );
+  }
+
+  /**
    * calculate movie rating.
    * @static
    */
   static async getRating(query, movieId) {
     try {
       const allRatings = [];
-      const ratings = await db.manyOrNone(query, [movieId]);
+      const reviews = [];
+      const ratings = await db.any(query, [movieId]);
       ratings.map((i) => {
         allRatings.push(i.rating);
+        if (i.review) reviews.push(i.review);
       });
       const average = allRatings.reduce(function (a, b) {
-        return a + b / allRatings.length.toFixed(2);
+        return +(a + b / allRatings.length).toFixed(2);
       }, 0);
-      return average;
+      return { average, reviews };
     } catch (error) {
       logger.error(error);
       return error;
