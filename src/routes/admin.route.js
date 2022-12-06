@@ -26,7 +26,6 @@ router.post(
 );
 router.use([authenticate, isSuper]);
 router.get("/users", adminControllers.fetchUsers);
-//send link to admin to reset password after creation
 router.post(
   "/create-admin",
   validate(createAdminSchema),

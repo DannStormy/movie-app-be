@@ -1,6 +1,6 @@
 export default {
   fetchAllMovies: `
-      SELECT *
+      SELECT id, title, genre, year
       FROM movies
       WHERE deleted = false
       ORDER BY id ASC
@@ -22,7 +22,7 @@ export default {
       AND deleted = false
    `,
   searchMovieQuery: `
-      SELECT *
+      SELECT id, title, genre, year
       FROM movies
       WHERE title
       ILIKE $3 
@@ -58,9 +58,13 @@ export default {
     WHERE id = $2
   `,
   getRating: `
-    SELECT * FROM ratings
-    WHERE movie_id = $1 
-    AND user_id = $2
+  SELECT movies.*, ratings.review
+  FROM
+      movies
+   LEFT JOIN ratings
+      ON movies.id = ratings.movie_id
+      WHERE movies.id = $1
+      AND user_id = $2
   `,
   editRating: `
     UPDATE ratings 

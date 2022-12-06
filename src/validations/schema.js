@@ -55,5 +55,3 @@ export default {
     review: stringCheck("Review"),
   }),
 };
-
-// add required to required fields

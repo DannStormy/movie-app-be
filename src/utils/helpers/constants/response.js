@@ -38,7 +38,9 @@ export default class Response {
    */
   static errorResponse(req, res, error) {
     const aggregateError = { ...error };
+    
     Helper.apiErrLogMessager(aggregateError, req);
+
     return res.status(aggregateError.status).json({
       status: apiMessage.FAIL,
       message: aggregateError.message,

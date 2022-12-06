@@ -117,21 +117,6 @@ export default class Helper {
   }
 
   /**
-   * Generates log for api errors.
-   * @static
-   * @private
-   * @param {object} error - The API error object.
-   * @param {Request} req - Request object.
-   * @memberof Helpers
-   * @returns {String} - It returns null.
-   */
-  static apiErrLogMessager(error, req) {
-    logger.error(
-      `${error.name} - ${error.status} - ${error.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`
-    );
-  }
-
-  /**
    * calculate movie rating.
    * @static
    */

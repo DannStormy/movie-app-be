@@ -11,6 +11,7 @@ export const register = async (req, res) => {
   try {
     req.body.role_id = 3;
     const user = await addUser(req.body);
+
     await addStatus(user.id);
     delete user.password;
     await sendEmail(
@@ -18,7 +19,8 @@ export const register = async (req, res) => {
       "Welcome",
       "You successfully registered to MovieApp.io"
     );
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       code: 201,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("client"),
     });
@@ -32,8 +34,10 @@ export const login = async (req, res) => {
   try {
     const data = { userId: req.user.id, role: req.user.role_id };
     const token = generateJWT(data);
+
     delete req.user.password;
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       data: { ...token, user: req.user },
       message: apiMessage.LOGIN_USER_SUCCESSFULLY,
     });
@@ -47,16 +51,19 @@ export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
     const userEmail = await getUserByEmail(email);
+
     if (!userEmail) {
       return Response.errorResponse(req, res, {
         status: 404,
         message: apiMessage.RESOURCE_NOT_FOUND("user"),
       });
     }
+
     const randomString = randomstring.generate();
     await UserService.passwordResetString(randomString, userEmail.id);
     const link = `${process.env.HOST}/${email}/${randomString}`;
     await sendEmail(email, "Forgot Password", link);
+
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
       code: 200,
@@ -75,6 +82,7 @@ export const resetPassword = async (req, res) => {
       "Password Changed",
       `Your password has been reset. If you did not initiate this action, request help @`
     );
+    
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_SUCCESS,
       code: 200,

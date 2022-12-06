@@ -1,7 +1,5 @@
 export default {
     INTERNAL_SERVER_ERROR: 'Oops, something broke on the server!!!',
-    DB_ERROR_STATUS: 'DB_PROCESS_FAILED',
-    MODULE_ERROR_STATUS: 'MODULE_PROCESS_BROKE',
     SUCCESS: 'success',
     SUCCESS_RESPONSE: 'Request was successfully processed',
     FAIL: 'fail',
@@ -9,7 +7,6 @@ export default {
     DB_ERROR: 'A database error occurred, either in redis or postgres',
     MODULE_ERROR: 'A module error occurred',
     NOT_FOUND_API: 'Oops, You have reached a dead end',
-    NOT_FOUND_FORM: 'Entity not found',
     AUTH_REQUIRED: 'Access denied, a valid access token is required',
     INVALID_VALIDATION_REQUEST: 'Verification type does not match with body sent',
     INVALID_PERMISSION: 'Permission denied. Invalid credentials provided',

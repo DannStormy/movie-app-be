@@ -16,6 +16,7 @@ class AccessControlMiddleware {
    */
   static isUser(req, res, next) {
     const { role } = req.data;
+
     if (role !== 3) {
       return Response.errorResponse(req, res, {
         status: 403,
@@ -35,6 +36,7 @@ class AccessControlMiddleware {
    */
   static isAdmin(req, res, next) {
     const { role } = req.data;
+
     if (role === 3) {
       return Response.errorResponse(req, res, {
         status: 403,
@@ -54,6 +56,7 @@ class AccessControlMiddleware {
    */
   static isSuper(req, res, next) {
     const { role } = req.data;
+    
     if (role !== 1) {
       return Response.errorResponse(req, res, {
         status: 403,

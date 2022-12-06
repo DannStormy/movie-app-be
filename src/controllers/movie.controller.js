@@ -4,8 +4,9 @@ import { Response, apiMessage } from "../utils/helpers/constants";
 export const fetchMovies = async (req, res) => {
   try {
     const movies = await MovieService.getMovies(req.query);
-    Response.successResponse(res, {
-      data: movies,
+
+    return Response.successResponse(res, {
+      data: { movies, rating },
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Movies"),
     });
   } catch (error) {
@@ -17,7 +18,8 @@ export const fetchMovies = async (req, res) => {
 export const fetchMovieByID = async (req, res) => {
   try {
     const movie = await MovieService.getMovieByID(req.params.movieId);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       data: movie,
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Movie"),
     });
@@ -27,20 +29,11 @@ export const fetchMovieByID = async (req, res) => {
   }
 };
 
-export const movieRating = async (req, res) => {
+export const rateMovie = async (req, res) => {
   try {
-    const rating = await MovieService.getMovieRating(
-      req.params.movieId,
-      req.data.userId
-    );
-    if (rating) {
-      return Response.errorResponse(req, res, {
-        status: 409,
-        message: apiMessage.RESOURCE_ALREADY_EXISTS("rating"),
-      });
-    }
     await MovieService.rateMovie(req.params.movieId, req.data.userId, req.body);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       code: 201,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("rating"),
     });
@@ -52,11 +45,10 @@ export const movieRating = async (req, res) => {
 
 export const getMovieRating = async (req, res) => {
   try {
-    const rating = await MovieService.getMovieRating(
-      req.params.movieId,
-      req.data.userId
-    );
-    Response.successResponse(res, {
+    const { params: movieId, data: userId } = req;
+    const rating = await MovieService.getMovieRating(movieId, userId);
+
+    return Response.successResponse(res, {
       data: rating,
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Rating and Review"),
     });
@@ -68,7 +60,8 @@ export const getMovieRating = async (req, res) => {
 export const addNewMovie = async (req, res) => {
   try {
     await MovieService.addMovie(req.body);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       code: 201,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("movie"),
     });
@@ -80,14 +73,9 @@ export const addNewMovie = async (req, res) => {
 
 export const deleteMovie = async (req, res) => {
   try {
-    const found = await MovieService.getMovieByID(req.params.movieId);
-    if (!found.movie)
-      return Response.errorResponse(req, res, {
-        status: 404,
-        message: apiMessage.RESOURCE_NOT_FOUND("movie"),
-      });
     await MovieService.removeMovie(req.params.movieId);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       message: apiMessage.RESOURCE_DELETE_SUCCESS("movie"),
     });
   } catch (error) {
@@ -100,7 +88,8 @@ export const titleEdit = async (req, res) => {
   const { title, movieId } = req.body;
   try {
     await MovieService.editTitle(title, movieId);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       message: apiMessage.RESOURCE_UPDATE_SUCCESS("Title"),
     });
   } catch (error) {
@@ -118,7 +107,8 @@ export const ratingEdit = async (req, res) => {
       req.params.movieId,
       req.data.userId
     );
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       message: apiMessage.RESOURCE_UPDATE_SUCCESS("Review"),
       data: edited,
     });

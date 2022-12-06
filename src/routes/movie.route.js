@@ -1,7 +1,9 @@
 import { Router } from "express";
 import * as movieControllers from "../controllers/movie.controller";
 import AccessControlMiddleware from "../middlewares/accessControl";
+import AdminMiddleware from "../middlewares/admin.middleware";
 import AuthMiddleware from "../middlewares/auth.middleware";
+import UserMiddleware from "../middlewares/user.middleware";
 import schema from "../validations/schema.js";
 
 const { isAdmin, isUser, isSuper } = AccessControlMiddleware;
@@ -24,7 +26,8 @@ router.post(
   "/rating/:movieId",
   validate(schema.ratingSchema),
   isUser,
-  movieControllers.movieRating
+  UserMiddleware.checkMovieRated,
+  movieControllers.rateMovie
 );
 router.put(
   "/rating/:movieId",
@@ -34,6 +37,10 @@ router.put(
 );
 router.use(isAdmin);
 router.post("/", validate(schema.addMovieSchema), movieControllers.addNewMovie);
-router.delete("/:movieId", movieControllers.deleteMovie);
+router.delete(
+  "/:movieId",
+  AdminMiddleware.findMovie,
+  movieControllers.deleteMovie
+);
 
 export default router;

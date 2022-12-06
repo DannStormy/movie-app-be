@@ -10,8 +10,10 @@ export const adminLogin = async (req, res) => {
   try {
     const data = { userId: req.user.id, role: req.user.role_id };
     let token = generateJWT(data);
+
     delete req.user.password;
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       data: { ...token, user: req.user },
       message: apiMessage.LOGIN_USER_SUCCESSFULLY,
     });
@@ -24,7 +26,8 @@ export const adminLogin = async (req, res) => {
 export const fetchUsers = async (req, res) => {
   try {
     const users = await AdminService.fetchAllUsers(req.query);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       data: users,
       message: apiMessage.RESOURCE_FETCH_SUCCESS("users"),
     });
@@ -38,14 +41,18 @@ export const createNewAdmin = async (req, res) => {
   try {
     const admin = await AdminService.createAdmin(req.body);
     const randomString = randomstring.generate();
+
     await AdminService.passwordResetString(randomString, admin.id);
+
     const link = `${process.env.HOST}/${req.body.email}/${randomString}`;
+
     await sendEmail(
       req.body.email,
       "Reset Default Password",
       `You have been registered as an admin on MovieApp.io, click on this ${link} to set your password.`
     );
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       code: 201,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("admin"),
     });
@@ -58,7 +65,8 @@ export const createNewAdmin = async (req, res) => {
 export const changeUserStatus = async (req, res) => {
   try {
     await AdminService.setUserStatus(req.body.status, req.params.userId);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       message: apiMessage.RESOURCE_UPDATE_SUCCESS("user status"),
     });
   } catch (error) {
@@ -70,7 +78,8 @@ export const changeUserStatus = async (req, res) => {
 export const changeAdminStatus = async (req, res) => {
   try {
     await AdminService.setAdminStatus(req.body.status, req.params.adminId);
-    Response.successResponse(res, {
+
+    return Response.successResponse(res, {
       message: apiMessage.RESOURCE_UPDATE_SUCCESS("admin status"),
     });
   } catch (error) {
@@ -87,6 +96,7 @@ export const adminResetPassword = async (req, res) => {
       "Password Changed",
       `Your password has been reset. If you did not initiate this action, request help @`
     );
+
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_SUCCESS,
       code: 200,

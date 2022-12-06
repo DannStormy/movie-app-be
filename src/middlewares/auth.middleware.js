@@ -13,10 +13,10 @@ export default class AuthMiddleware {
   static validate(schema) {
     return async (req, res, next) => {
       try {
-        await Helper.validateInput(schema, req.body);
+        Helper.validateInput(schema, req.body);
+
         next();
       } catch (error) {
-        logger.error("Error", error);
         return res.status(400).json({ message: error.details[0].message });
       }
     };
@@ -32,10 +32,12 @@ export default class AuthMiddleware {
    */
   static checkAuthorizationToken(authorization) {
     let bearerToken = null;
+
     if (authorization) {
       const token = authorization.split(" ")[1];
       bearerToken = token || authorization;
     }
+
     return bearerToken;
   }
   /**
@@ -49,8 +51,9 @@ export default class AuthMiddleware {
   static checkToken(req) {
     const {
       headers: { authorization },
-    } = req;
+    } = req; 
     const bearerToken = AuthMiddleware.checkAuthorizationToken(authorization);
+
     return req.body.refreshToken
       ? req.body.refreshToken
       : bearerToken ||
@@ -71,28 +74,34 @@ export default class AuthMiddleware {
    */
   static async authenticate(req, res, next) {
     const token = AuthMiddleware.checkToken(req);
+
     if (!token) {
       return Response.errorResponse(req, res, {
         status: 422,
         message: apiMessage.TOKEN_ERROR,
       });
     }
+
     try {
       const decoded = req.body.refreshToken
         ? Helper.verifyToken(token, process.env.REFRESH_SECRET)
         : Helper.verifyToken(token, process.env.JWT_SECRET_KEY);
+
       req.data = decoded;
+      
       const active = await Helper.isActive(req.data.userId, req.data.role);
+
       if (active === false) {
         return Response.errorResponse(req, res, {
           status: 401,
           message: apiMessage.ACCOUNT_INACTIVE,
         });
       }
+      
       next();
     } catch (err) {
       logger.error(err);
-      return err;
+      return res.status(400).json({ message: err.message });
     }
   }
 }
