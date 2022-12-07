@@ -57,14 +57,12 @@ export default {
     updated_at = NOW()
     WHERE id = $2
   `,
-  getRating: `
-  SELECT movies.*, ratings.review
-  FROM
-      movies
-   LEFT JOIN ratings
-      ON movies.id = ratings.movie_id
-      WHERE movies.id = $1
-      AND user_id = $2
+  getUserMovieRating: `
+    SELECT movies.id, title, genre, year, rating, review 
+    FROM movies 
+    LEFT JOIN ratings 
+    ON movies.id = ratings.movie_id 
+    WHERE user_id = $1
   `,
   editRating: `
     UPDATE ratings 
@@ -75,7 +73,9 @@ export default {
     RETURNING *;
   `,
   getMovieRatings: `
-    SELECT rating, review
+    SELECT 
+    ROUND(AVG(rating), 2) AS average_rating,
+    json_agg(review) as reviews
     FROM ratings
     WHERE movie_id = $1
   `,

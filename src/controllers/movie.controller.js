@@ -17,7 +17,7 @@ export const fetchMovies = async (req, res) => {
 
 export const fetchMovieByID = async (req, res) => {
   try {
-    const movie = await MovieService.getMovieByID(req.params.movieId);
+    const movie = await MovieService.getRatingsAndReviews(req.params.movieId)
 
     return Response.successResponse(res, {
       data: movie,
@@ -31,10 +31,11 @@ export const fetchMovieByID = async (req, res) => {
 
 export const rateMovie = async (req, res) => {
   try {
-    await MovieService.rateMovie(req.params.movieId, req.data.userId, req.body);
+    const { params: { movieId }, data: { userId } } = req;
+    await MovieService.rateMovie(movieId, userId, req.body);
 
     return Response.successResponse(res, {
-      code: 201,
+      code: 200,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("rating"),
     });
   } catch (error) {
@@ -43,10 +44,10 @@ export const rateMovie = async (req, res) => {
   }
 };
 
-export const getMovieRating = async (req, res) => {
+export const getUserMovieRatings = async (req, res) => {
   try {
-    const { params: movieId, data: userId } = req;
-    const rating = await MovieService.getMovieRating(movieId, userId);
+    const { data: { userId } } = req;
+    const rating = await MovieService.getMovieRating(userId);
 
     return Response.successResponse(res, {
       data: rating,
@@ -84,7 +85,7 @@ export const deleteMovie = async (req, res) => {
   }
 };
 
-export const titleEdit = async (req, res) => {
+export const editTitle = async (req, res) => {
   const { title, movieId } = req.body;
   try {
     await MovieService.editTitle(title, movieId);
@@ -98,7 +99,7 @@ export const titleEdit = async (req, res) => {
   }
 };
 
-export const ratingEdit = async (req, res) => {
+export const editRating = async (req, res) => {
   try {
     const { rating, review } = req.body;
     const edited = await MovieService.editRating(

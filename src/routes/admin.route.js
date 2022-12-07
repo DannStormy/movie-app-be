@@ -18,26 +18,31 @@ router.post(
   AdminMiddleware.checkDetails,
   adminControllers.adminLogin
 );
+
 router.post(
   "/resetpassword/:email/:resetString",
   validate(passwordReset),
   AdminMiddleware.checkResetPasswordString,
   adminControllers.adminResetPassword
 );
+
 router.use([authenticate, isSuper]);
 router.get("/users", adminControllers.fetchUsers);
+
 router.post(
   "/create-admin",
   validate(createAdminSchema),
   AdminMiddleware.checkAdminExists,
   adminControllers.createNewAdmin
 );
+
 router.put(
   "/accounts/user/:userId/toggle-status",
   validate(changeStatusSchema),
   AdminMiddleware.checkUserAccount,
   adminControllers.changeUserStatus
 );
+
 router.put(
   "/accounts/:adminId/toggle-status",
   validate(changeStatusSchema),

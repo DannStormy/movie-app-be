@@ -89,7 +89,7 @@ export default class UserMiddleware {
    * @param {Next} next - The function that calls the next handler.
    * @returns { JSON } - Returns message
    */
-  static async checkMovieRated(req, res, next) {
+  static async hasRated(req, res, next) {
     try {
       const rating = await MovieService.getMovieRating(req.params.movieId, req.data.userId);
 

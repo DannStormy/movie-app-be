@@ -169,7 +169,7 @@ export default class AdminMiddleware {
           message: apiMessage.AUTH_REQUIRED,
         });
       }
-      
+
       return next();
     } catch (error) {
       logger.error(error);
@@ -186,11 +186,11 @@ export default class AdminMiddleware {
    * @returns { JSON } - Returns message
    */
 
-  static async findMovie(req, res, next) {
+  static async checkIfMovieExists(req, res, next) {
     try {
-      const found = await MovieService.getMovieByID(req.params.movieId);
+      const movieExists = await MovieService.getMovieByID(req.params.movieId);
 
-      if (!found.movie)
+      if (!movieExists)
         return Response.errorResponse(req, res, {
           status: 404,
           message: apiMessage.RESOURCE_NOT_FOUND("movie"),

@@ -15,31 +15,38 @@ router.get("/", movieControllers.fetchMovies);
 router.get("/:movieId", movieControllers.fetchMovieByID);
 
 router.use(authenticate);
+
 router.put(
   "/title/:movieId",
   validate(schema.editTitleSchema),
   isSuper,
-  movieControllers.titleEdit
+  movieControllers.editTitle
 );
-router.get("/rating/:movieId", isUser, movieControllers.getMovieRating);
+
+router.get("/user/rating/", isUser, movieControllers.getUserMovieRatings);
+
 router.post(
   "/rating/:movieId",
   validate(schema.ratingSchema),
   isUser,
-  UserMiddleware.checkMovieRated,
+  UserMiddleware.hasRated,
   movieControllers.rateMovie
 );
+
 router.put(
   "/rating/:movieId",
   validate(schema.editRatingSchema),
   isUser,
-  movieControllers.ratingEdit
+  movieControllers.editRating
 );
+
 router.use(isAdmin);
+
 router.post("/", validate(schema.addMovieSchema), movieControllers.addNewMovie);
+
 router.delete(
   "/:movieId",
-  AdminMiddleware.findMovie,
+  AdminMiddleware.checkIfMovieExists,
   movieControllers.deleteMovie
 );
 

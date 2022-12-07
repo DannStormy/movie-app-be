@@ -117,25 +117,17 @@ export default class Helper {
   }
 
   /**
-   * calculate movie rating.
+   * Generates log for api errors.
    * @static
+   * @private
+   * @param {object} error - The API error object.
+   * @param {Request} req - Request object.
+   * @memberof Helpers
+   * @returns {String} - It returns null.
    */
-  static async getRating(query, movieId) {
-    try {
-      const allRatings = [];
-      const reviews = [];
-      const ratings = await db.any(query, [movieId]);
-      ratings.map((i) => {
-        allRatings.push(i.rating);
-        if (i.review) reviews.push(i.review);
-      });
-      const average = allRatings.reduce(function (a, b) {
-        return +(a + b / allRatings.length).toFixed(2);
-      }, 0);
-      return { average, reviews };
-    } catch (error) {
-      logger.error(error);
-      return error;
-    }
+  static apiErrLogMessager(error, req) {
+    logger.error(
+      `${error.status} - ${error.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`
+    );
   }
 }

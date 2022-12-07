@@ -11,18 +11,29 @@ import schema from "../validations/schema.js";
 
 const router = Router();
 
-const { registerSchema, loginSchema, resetPasswordSchema, passwordReset } =
-  schema;
 const { validate } = AuthMiddleware;
 const { checkUserDetails, checkUserExists, checkResetPasswordString } =
   UserMiddleware;
 
-router.post("/register", validate(registerSchema), checkUserExists, register);
-router.post("/login", validate(loginSchema), checkUserDetails, login);
-router.post("/forgotpassword", validate(resetPasswordSchema), forgotPassword);
+router.post(
+  "/register",
+  validate(schema.registerSchema),
+  checkUserExists,
+  register
+);
+
+router.post("/login", validate(schema.loginSchema), checkUserDetails, login);
+
+router.post(
+  "/forgotpassword",
+  validate(schema.resetPasswordSchema),
+  checkUserExists,
+  forgotPassword
+);
+
 router.post(
   "/resetpassword/:email/:resetString",
-  validate(passwordReset),
+  validate(schema.passwordReset),
   checkResetPasswordString,
   resetPassword
 );

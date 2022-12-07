@@ -4,7 +4,7 @@ import UserService from "../services/user.service";
 import sendEmail from "../utils/helpers/mailer/mailer";
 import { Response, apiMessage } from "../utils/helpers/constants";
 
-const { addUser, addStatus, getUserByEmail, updatePassword } = UserService;
+const { addUser, addStatus, updatePassword } = UserService;
 const { generateJWT } = Helper;
 
 export const register = async (req, res) => {
@@ -50,15 +50,6 @@ export const login = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    const userEmail = await getUserByEmail(email);
-
-    if (!userEmail) {
-      return Response.errorResponse(req, res, {
-        status: 404,
-        message: apiMessage.RESOURCE_NOT_FOUND("user"),
-      });
-    }
-
     const randomString = randomstring.generate();
     await UserService.passwordResetString(randomString, userEmail.id);
     const link = `${process.env.HOST}/${email}/${randomString}`;
@@ -82,7 +73,7 @@ export const resetPassword = async (req, res) => {
       "Password Changed",
       `Your password has been reset. If you did not initiate this action, request help @`
     );
-    
+
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_SUCCESS,
       code: 200,

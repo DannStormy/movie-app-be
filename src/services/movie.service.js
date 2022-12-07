@@ -2,7 +2,7 @@ import db from "../config/config";
 import movie_queries from "../queries/movie.queries";
 import Helper from "../utils/helpers/helpers";
 
-const { fetchResourceByPage, calcPages, getRating } = Helper;
+const { fetchResourceByPage, calcPages } = Helper;
 
 export default class MovieService {
   /**
@@ -79,17 +79,31 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async getMovieByID(movieId) {
-    const movie = await db.oneOrNone(movie_queries.fetchMovieByID, [movieId]);
-    const rating = await getRating(movie_queries.getMovieRatings, movieId);
-    return { movie, rating };
+    return db.oneOrNone(movie_queries.fetchMovieByID, [movieId])
   }
 
   /**
-   * get movie rating
+   * returns average rating of movie and reviews with given ID
    * @memberof MovieService
    */
-  static async getMovieRating(movieId, userId) {
-    return db.oneOrNone(movie_queries.getRating, [movieId, userId]);
+  static async getMovieRatings(movieId) {
+    return db.any(movie_queries.getMovieRatings, [movieId]);
+  }
+
+  /**
+   * returns one movie/avg rating & reviews
+   * @memberof MovieService
+   */
+  static async getRatingsAndReviews(movieId) {
+    return Promise.all([MovieService.getMovieByID(movieId), MovieService.getMovieRatings(movieId)]);
+  }
+
+  /**
+   * get user movie ratings and reviews
+   * @memberof MovieService
+   */
+  static async getMovieRating(userId) {
+    return db.manyOrNone(movie_queries.getUserMovieRating, [userId]);
   }
   /**
    * rate movie with given ID
