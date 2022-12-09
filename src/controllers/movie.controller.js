@@ -6,7 +6,7 @@ export const fetchMovies = async (req, res) => {
     const movies = await MovieService.getMovies(req.query);
 
     return Response.successResponse(res, {
-      data: { movies, rating },
+      data:  movies ,
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Movies"),
     });
   } catch (error) {

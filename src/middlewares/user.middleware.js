@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { userDetails } from "../utils/helpers/constants/constants";
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
 import { Response, apiMessage } from "../utils/helpers/constants";
@@ -15,7 +17,7 @@ export default class UserMiddleware {
    * @returns { JSON } - Returns message
    */
 
-  static async checkUserExists(req, res, next) {
+  static async emailExists(req, res, next) {
     try {
       const { email } = req.body;
       const user = await getUserByEmail(email.trim().toLowerCase());
@@ -35,26 +37,52 @@ export default class UserMiddleware {
   }
 
   /**
-   * find user in users table
+   * Checks if user does not exists
    * @static
    * @param {Request} req - The request from the endpoint.
    * @param {Response} res - The response returned by the method.
    * @param {Next} next - The function that calls the next handler.
    * @returns { JSON } - Returns message
    */
-  static async checkUserDetails(req, res, next) {
+
+  static async emailDoesNotExist(req, res, next) {
     try {
-      const { email, password } = req.body;
-      const user = await getUserByEmail(email);
+      const { email } = req.body;
+      const user = await getUserByEmail(email.trim().toLowerCase());
 
       if (!user) {
         return Response.errorResponse(req, res, {
-          status: 400,
-          message: apiMessage.INVALID_CREDENTIALS,
+          status: 409,
+          message: "Invalid credentials",
         });
       }
 
-      const passwordMatch = Helper.comparePasswordHash(password, user.password);
+      req.user = user;
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
+
+  //NOT WORKING
+  /**
+   * compare user passwords
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+  static async validateUserPassword(req, res, next) {
+    try {
+      const { user, body } = req;
+      const passwordMatch = Helper.comparePasswordHash(
+        body.password,
+        user.password
+      );
+
+      console.log(await passwordMatch);
 
       if (!passwordMatch) {
         return Response.errorResponse(req, res, {
@@ -63,12 +91,57 @@ export default class UserMiddleware {
         });
       }
 
-      const active = await Helper.isActive(user.id, user.role_id);
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
 
-      if (!active) {
+  /**
+   * check if user account is active
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+  static async validateUserActive(req, res, next) {
+    try {
+      const { user } = req;
+
+      if (!user.is_active) {
         return Response.errorResponse(req, res, {
           status: 401,
           message: apiMessage.ACCOUNT_INACTIVE,
+        });
+      }
+
+      req.user = user;
+
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
+
+  /**
+   * check if user email is verified
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+  static async validateUserEmail(req, res, next) {
+    try {
+      const { user } = req;
+
+      if (!user.isemailverified) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: "yet to verify email",
         });
       }
 
@@ -91,7 +164,12 @@ export default class UserMiddleware {
    */
   static async hasRated(req, res, next) {
     try {
-      const rating = await MovieService.getMovieRating(req.params.movieId, req.data.userId);
+      const {
+        params: { movieId },
+        data: { userId },
+      } = req;
+
+      const rating = await MovieService.getMovieRating(movieId, userId);
 
       if (rating) {
         return Response.errorResponse(req, res, {
@@ -108,7 +186,7 @@ export default class UserMiddleware {
   }
 
   /**
-   * checks reset password string
+   * checks reset password token
    * @static
    * @param {Request} req - The request from the endpoint.
    * @param {Response} res - The response returned by the method.
@@ -116,24 +194,68 @@ export default class UserMiddleware {
    * @returns { JSON } - Returns message
    */
 
-  static async checkResetPasswordString(req, res, next) {
+  static async validateResetPasswordToken(req, res, next) {
     try {
-      const dbString = await UserService.getUserByEmail(req.params.email);
+      const {
+        params: { resetPasswordToken },
+      } = req;
+      const user = await UserService.fetchPasswordToken(resetPasswordToken);
+      const data = _.pick(user, userDetails);
 
-      if (!dbString.password_reset_string) {
+      if (!user.password_reset_string) {
         return Response.errorResponse(req, res, {
           status: 404,
           message: apiMessage.RESOURCE_NOT_FOUND("reset password string"),
         });
       }
 
-      if (dbString.password_reset_string != req.params.resetString) {
+      if (user.password_reset_string !== resetPasswordToken) {
         return Response.errorResponse(req, res, {
           status: 400,
-          message: "reset string's don't match",
+          message: "reset token error",
         });
       }
-      
+
+      req.user = data;
+
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
+
+  /**
+   * checks email verification token
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+
+  static async validateEmailVerificationToken(req, res, next) {
+    try {
+      const { emailToken } = req.params;
+      const user = await UserService.fetchEmailVerificationToken(emailToken);
+
+      if (!user) {
+        return Response.errorResponse(req, res, {
+          status: 404,
+          message: "email verification token not found",
+        });
+      }
+
+      const { email, email_verification_expire } = user;
+
+      if (Helper.validateTokenExpiry(email_verification_expire)) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: "email verification token expired",
+        });
+      }
+      req.email = email;
+
       return next();
     } catch (error) {
       logger.error(error);

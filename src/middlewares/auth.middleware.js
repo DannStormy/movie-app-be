@@ -13,7 +13,7 @@ export default class AuthMiddleware {
   static validate(schema) {
     return async (req, res, next) => {
       try {
-        Helper.validateInput(schema, req.body);
+        await Helper.validateInput(schema, req.body);
 
         next();
       } catch (error) {

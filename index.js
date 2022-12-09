@@ -1,4 +1,5 @@
 import "dotenv/config";
+import config from "./src/config/index";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -7,7 +8,7 @@ import router from "./src/routes";
 
 const app = express();
 
-const port = process.env.PORT || 1000;
+const port = config.PORT || 1000;
 
 global.logger = logger;
 app.use(express.json());

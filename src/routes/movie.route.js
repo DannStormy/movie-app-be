@@ -15,6 +15,12 @@ router.get("/", movieControllers.fetchMovies);
 router.get("/:movieId", movieControllers.fetchMovieByID);
 
 router.use(authenticate);
+router.post(
+  "/rating/:movieId",
+  validate(schema.ratingSchema),
+  UserMiddleware.hasRated,
+  movieControllers.rateMovie
+);
 
 router.put(
   "/title/:movieId",
@@ -24,14 +30,6 @@ router.put(
 );
 
 router.get("/user/rating/", isUser, movieControllers.getUserMovieRatings);
-
-router.post(
-  "/rating/:movieId",
-  validate(schema.ratingSchema),
-  isUser,
-  UserMiddleware.hasRated,
-  movieControllers.rateMovie
-);
 
 router.put(
   "/rating/:movieId",

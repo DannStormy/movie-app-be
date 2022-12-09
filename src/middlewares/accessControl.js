@@ -37,7 +37,7 @@ class AccessControlMiddleware {
   static isAdmin(req, res, next) {
     const { role } = req.data;
 
-    if (role === 3) {
+    if (role === 3) { // fetch from role where id === role, then check if the name is === admin
       return Response.errorResponse(req, res, {
         status: 403,
         message: apiMessage.ROLE_NOT_SUFFICIENT,

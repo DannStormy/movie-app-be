@@ -17,40 +17,50 @@ export default {
     email: emailCheck(),
     password: passwordCheck(),
   }),
-  resetPasswordSchema: Joi.object({
+
+  checkEmailSchema: Joi.object({
     email: emailCheck(),
   }),
+
   passwordReset: Joi.object({
     password: passwordCheck(),
   }),
+
   loginSchema: Joi.object({
     email: emailCheck(),
     password: passwordCheck(),
   }),
+
   createAdminSchema: Joi.object({
     name: stringCheck("name"),
     role_id: numberCheck("role_id"),
     email: emailCheck(),
   }),
+
   addMovieSchema: Joi.object({
     title: stringCheck("title"),
     genre: stringCheck("genre"),
     year: numberCheck(),
   }),
+
   changeStatusSchema: Joi.object({
     status: Joi.boolean(),
   }),
+
   editTitleSchema: Joi.object({
     title: stringCheck("Title"),
   }),
+
   ratingSchema: Joi.object({
     rating: ratingNumberCheck("Rating"),
     review: Joi.optional(),
   }),
+
   editRatingSchema: Joi.object({
     rating: Joi.optional(),
     review: Joi.optional(),
   }),
+  
   editReviewSchema: Joi.object({
     review: stringCheck("Review"),
   }),

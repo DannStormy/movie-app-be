@@ -1,34 +1,58 @@
 export default {
   registerUser: `
-        INSERT INTO users (firstName, lastName, email, password, role_id)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *
+      INSERT INTO users (firstName, lastName, email, password, role_id, emailverificationtoken, email_verification_expire)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
     `,
   findUserByEmail: `
-        SELECT * 
-        FROM users
-        WHERE email = $1
-    `,
-  addClientStatus: `
-        INSERT into client_account_status (id, status)
-        VALUES ($1, $2)
+      SELECT * 
+      FROM users
+      WHERE email = $1
     `,
   checkClientStatus: `
-        SELECT status
-        FROM client_account_status
-        WHERE id = $1
+      SELECT status
+      FROM client_account_status
+      WHERE id = $1
     `,
   updatePasswordResetString: `
-        UPDATE users
-        SET password_reset_string = $1,
-        updated_at = NOW()
-        WHERE id = $2
+      UPDATE users
+      SET password_reset_string = $1,
+      updated_at = NOW()
+      WHERE id = $2
+`,
+  updateEmailVerificationToken: `
+      UPDATE users
+      SET emailVerificationToken = $1,
+      email_verification_expire = $2,
+      updated_at = NOW()
+      WHERE email = $3
   `,
   updatePassword: `
-        UPDATE users
-        SET password = $1,
-        password_reset_string = NULL,
-        updated_at = NOW()
-        WHERE email = $2
+      UPDATE users
+      SET password = $1,
+      password_reset_string = NULL,
+      updated_at = NOW()
+      WHERE email = $2
+  `,
+  updateIsEmailVerified: `
+      UPDATE users
+      SET isEmailVerified = true,
+      updated_at = NOW()
+      WHERE email = $1
+  `,
+  fetchPasswordToken: `
+      SELECT *
+      FROM users
+      WHERE password_reset_string = $1;
+  `,
+  fetchEmailVerificationToken: `
+      SELECT emailverificationtoken, email, email_verification_expire
+      FROM users
+      WHERE emailverificationtoken = $1;
+  `,
+  fetchUserRole: `
+      SELECT role_id 
+      FROM roles
+      WHERE role = $1
   `,
 };

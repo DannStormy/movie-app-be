@@ -1,4 +1,4 @@
-import db from "../../config/config";
+import db from "../../config/db/config";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import adminQueries from "../../queries/admin.queries";
@@ -129,5 +129,31 @@ export default class Helper {
     logger.error(
       `${error.status} - ${error.message} - ${req.originalUrl} - ${req.method} - ${req.ip}`
     );
+  }
+
+  /**
+   * set expiry time for tokens.
+   * @static
+   * @private
+   * @param {object} error - The API error object.
+   * @param {Request} req - Request object.
+   * @memberof Helpers
+   * @returns {String} - It returns null.
+   */
+  static setTokenExpire(minutes) {
+    return new Date().getTime() + minutes * 60 * 1000;
+  }
+
+  /**
+   * check expiry time for tokens.
+   * @static
+   * @private
+   * @param {object} error - The API error object.
+   * @param {Request} req - Request object.
+   * @memberof Helpers
+   * @returns {String} - It returns null.
+   */
+  static validateTokenExpiry(expiry) {
+    return new Date().getTime() > expiry;
   }
 }

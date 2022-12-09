@@ -1,14 +1,6 @@
-import db from "../config/config";
+import db from "../config/db/config";
 import Helper from "../utils/helpers/helpers";
 import user_queries from "../queries/user.queries";
-
-const {
-  registerUser,
-  findUserByEmail,
-  addClientStatus,
-  checkClientStatus,
-  updatePassword,
-} = user_queries;
 
 export default class UserService {
   /**
@@ -16,24 +8,34 @@ export default class UserService {
    * @memberof UserService
    */
   static async addUser(data) {
-    let { firstName, lastName, email, password, role_id } = data;
-    email = email.trim().toLowerCase();
-    password = Helper.generatePasswordHash(password);
-    return db.one(registerUser, [
+    let {
       firstName,
       lastName,
       email,
       password,
       role_id,
+      emailverificationtoken,
+      email_verification_expire,
+    } = data;
+    email = email.trim().toLowerCase();
+    password = Helper.generatePasswordHash(password);
+    return db.one(user_queries.registerUser, [
+      firstName,
+      lastName,
+      email,
+      password,
+      role_id,
+      emailverificationtoken,
+      email_verification_expire,
     ]);
   }
 
   /**
-   * register user status
+   * fetch role id
    * @memberof UserService
    */
-  static async addStatus(id, status = true) {
-    return db.none(addClientStatus, [id, status]);
+  static async fetchUserRole(role) {
+    return db.oneOrNone(user_queries.fetchUserRole, [role]);
   }
 
   /**
@@ -41,7 +43,7 @@ export default class UserService {
    * @memberof UserService
    */
   static async getUserByEmail(email) {
-    return db.oneOrNone(findUserByEmail, [email]);
+    return db.oneOrNone(user_queries.findUserByEmail, [email]);
   }
 
   /**
@@ -49,7 +51,7 @@ export default class UserService {
    * @memberof UserService
    */
   static async fetchClientStatus(id) {
-    return db.oneOrNone(checkClientStatus, [id]);
+    return db.oneOrNone(user_queries.checkClientStatus, [id]);
   }
 
   /**
@@ -58,13 +60,57 @@ export default class UserService {
    */
   static async updatePassword(password, email) {
     password = Helper.generatePasswordHash(password);
-    return db.oneOrNone(updatePassword, [password, email]);
+    return db.oneOrNone(user_queries.updatePassword, [password, email]);
   }
+
   /**
-   *  set password reset string
+   *  set email verification token
    * @memberof UserService
    */
-  static async passwordResetString(string, userId) {
-    return db.none(user_queries.updatePasswordResetString, [string, userId]);
+  static async updateEmailVerificationToken(token, token_expire, email) {
+    return db.none(user_queries.updateEmailVerificationToken, [token, token_expire, email]);
+  }
+
+  /**
+   *  set user email verified status
+   * @memberof UserService
+   */
+  static async updateIsEmailVerified(email) {
+    return db.none(user_queries.updateIsEmailVerified, [email]);
+  }
+
+  /**
+   *  set password reset token
+   * @memberof UserService
+   */
+  static async updatePasswordResetString(token, userId) {
+    return db.none(user_queries.updatePasswordResetString, [token, userId]);
+  }
+
+  /**
+   *  fetch password reset token
+   * @memberof UserService
+   */
+  static async fetchPasswordToken(token) {
+    return db.oneOrNone(user_queries.fetchPasswordToken, [token]);
+  }
+
+  /**
+   *  fetch email verification token
+   * @memberof UserService
+   */
+  static async fetchEmailVerificationToken(token) {
+    return db.oneOrNone(user_queries.fetchEmailVerificationToken, [token]);
+  }
+
+  /**
+   *  verify email
+   * @memberof UserService
+   */
+  static async verifyEmail(email) {
+    return Promise.all([
+      UserService.updateEmailVerificationToken(null, null, email),
+      UserService.updateIsEmailVerified(email),
+    ]);
   }
 }

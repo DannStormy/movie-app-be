@@ -1,4 +1,4 @@
-import db from "../config/config";
+import db from "../config/db/config";
 import movie_queries from "../queries/movie.queries";
 import Helper from "../utils/helpers/helpers";
 
@@ -79,7 +79,7 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async getMovieByID(movieId) {
-    return db.oneOrNone(movie_queries.fetchMovieByID, [movieId])
+    return db.oneOrNone(movie_queries.fetchMovieByID, [movieId]);
   }
 
   /**
@@ -95,7 +95,10 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async getRatingsAndReviews(movieId) {
-    return Promise.all([MovieService.getMovieByID(movieId), MovieService.getMovieRatings(movieId)]);
+    return Promise.all([
+      MovieService.getMovieByID(movieId),
+      MovieService.getMovieRatings(movieId),
+    ]);
   }
 
   /**

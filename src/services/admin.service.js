@@ -1,4 +1,4 @@
-import db from "../config/config";
+import db from "../config/db/config";
 import Helper from "../utils/helpers/helpers";
 import adminQueries from "../queries/admin.queries";
 import super_queries from "../queries/super.queries";

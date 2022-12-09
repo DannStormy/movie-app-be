@@ -1,3 +1,4 @@
+import config from "../../../config";
 import nodemailer from "nodemailer";
 
 const sendEmail = async (email, subject, text) => {
@@ -8,11 +9,11 @@ const sendEmail = async (email, subject, text) => {
       secure: false,
       auth: {
         type: "OAuth2",
-        user: process.env.MAIL_USERNAME,
-        pass: process.env.MAIL_PASSWORD,
-        clientId: process.env.OAUTH_CLIENTID,
-        clientSecret: process.env.OAUTH_CLIENT_SECRET,
-        refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+        user: config.MAIL_USERNAME,
+        pass: config.MAIL_PASSWORD,
+        clientId: config.OAUTH_CLIENTID,
+        clientSecret: config.OAUTH_CLIENT_SECRET,
+        refreshToken: config.OAUTH_REFRESH_TOKEN,
       },
     });
 

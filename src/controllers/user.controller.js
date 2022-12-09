@@ -1,28 +1,53 @@
+import _ from "lodash";
+import { userDetails } from "../utils/helpers/constants/constants";
 import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
 import sendEmail from "../utils/helpers/mailer/mailer";
 import { Response, apiMessage } from "../utils/helpers/constants";
 
-const { addUser, addStatus, updatePassword } = UserService;
+const { addUser, updatePassword } = UserService;
 const { generateJWT } = Helper;
 
 export const register = async (req, res) => {
   try {
-    req.body.role_id = 3;
-    const user = await addUser(req.body);
+    const { email } = req.body;
+    const { role_id } = await UserService.fetchUserRole("client");
 
-    await addStatus(user.id);
-    delete user.password;
-    await sendEmail(
-      req.body.email,
-      "Welcome",
-      "You successfully registered to MovieApp.io"
-    );
+    req.body.role_id = role_id;
+    req.body.emailverificationtoken = randomstring.generate();
+    req.body.email_verification_expire = Helper.setTokenExpire(1);
+
+    await addUser(req.body);
+
+    const emailVerificationLink = `${process.env.HOST}/${req.body.emailverificationtoken}`;
+    await sendEmail(email, "Verify Your Email", emailVerificationLink);
+
+    // check his email and use the link to verify his account or regenerate the email if they didnt see it or it has expired
+    // dont forget to add expiry date to it
+    // also implement a functionality to regenerate email verification mail incase the old one expired before they can be used
 
     return Response.successResponse(res, {
-      code: 201,
-      message: apiMessage.RESOURCE_CREATE_SUCCESS("client"),
+      code: 206,
+      message: "account registered, check email for verification link",
+    });
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+};
+
+export const regenerateEmailVerificationToken = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const token = randomstring.generate();
+    const tokenExpire = Helper.setTokenExpire(1);
+
+    await UserService.updateEmailVerificationToken(token, tokenExpire, email);
+    await sendEmail(email, "Verify Your Email", token);
+
+    return Response.successResponse(res, {
+      message: "check email for verification link",
     });
   } catch (error) {
     logger.error(error);
@@ -34,11 +59,10 @@ export const login = async (req, res) => {
   try {
     const data = { userId: req.user.id, role: req.user.role_id };
     const token = generateJWT(data);
-
-    delete req.user.password;
+    const user = _.pick(req.user, userDetails);
 
     return Response.successResponse(res, {
-      data: { ...token, user: req.user },
+      data: { ...token, user: user },
       message: apiMessage.LOGIN_USER_SUCCESSFULLY,
     });
   } catch (error) {
@@ -47,13 +71,28 @@ export const login = async (req, res) => {
   }
 };
 
-export const forgotPassword = async (req, res) => {
-  const { email } = req.body;
+export const verifyEmail = async (req, res) => {
   try {
-    const randomString = randomstring.generate();
-    await UserService.passwordResetString(randomString, userEmail.id);
-    const link = `${process.env.HOST}/${email}/${randomString}`;
-    await sendEmail(email, "Forgot Password", link);
+    await UserService.verifyEmail(req.email);
+
+    return Response.successResponse(res, {
+      message: "email verified",
+    });
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+};
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { user } = req;
+
+    const token = randomstring.generate();
+    await UserService.updatePasswordResetString(token, user.id);
+
+    const passwordResetLink = `${process.env.HOST}/${user.email}/${token}`;
+    await sendEmail(user.email, "Forgot Password", passwordResetLink);
 
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
@@ -67,16 +106,25 @@ export const forgotPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    await updatePassword(req.body.password, req.params.email);
+    const {
+      body: { password },
+      user: { id, email, role_id },
+    } = req;
+
+    await updatePassword(password, email);
     await sendEmail(
-      req.params.email,
+      email,
       "Password Changed",
       `Your password has been reset. If you did not initiate this action, request help @`
     );
 
+    const data = { id, role_id };
+    const token = generateJWT(data);
+    const user = _.pick(req.user, userDetails);
+
     return Response.successResponse(res, {
-      message: apiMessage.RESET_PASSWORD_SUCCESS,
-      code: 200,
+      data: { ...token, user: user },
+      message: apiMessage.LOGIN_USER_SUCCESSFULLY,
     });
   } catch (error) {
     logger.error(error);
