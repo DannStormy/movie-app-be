@@ -6,7 +6,7 @@ export const fetchMovies = async (req, res) => {
     const movies = await MovieService.getMovies(req.query);
 
     return Response.successResponse(res, {
-      data:  movies ,
+      data: movies,
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Movies"),
     });
   } catch (error) {
@@ -17,10 +17,9 @@ export const fetchMovies = async (req, res) => {
 
 export const fetchMovieByID = async (req, res) => {
   try {
-    const movie = await MovieService.getRatingsAndReviews(req.params.movieId)
-
+    const movie = await MovieService.getRatingsAndReviews(req.params.movieId);
     return Response.successResponse(res, {
-      data: movie,
+      data: movie, //destructure response
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Movie"),
     });
   } catch (error) {
@@ -31,7 +30,10 @@ export const fetchMovieByID = async (req, res) => {
 
 export const rateMovie = async (req, res) => {
   try {
-    const { params: { movieId }, data: { userId } } = req;
+    const {
+      params: { movieId },
+      data: { userId },
+    } = req;
     await MovieService.rateMovie(movieId, userId, req.body);
 
     return Response.successResponse(res, {
@@ -46,7 +48,9 @@ export const rateMovie = async (req, res) => {
 
 export const getUserMovieRatings = async (req, res) => {
   try {
-    const { data: { userId } } = req;
+    const {
+      data: { userId },
+    } = req;
     const rating = await MovieService.getMovieRating(userId);
 
     return Response.successResponse(res, {

@@ -1,4 +1,5 @@
 import _ from "lodash";
+import config from "../config";
 import { userDetails } from "../utils/helpers/constants/constants";
 import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
@@ -18,17 +19,15 @@ export const register = async (req, res) => {
     req.body.emailverificationtoken = randomstring.generate();
     req.body.email_verification_expire = Helper.setTokenExpire(1);
 
-    await addUser(req.body);
+    const user = await addUser(req.body);
+    const details = _.pick(user, userDetails);
 
-    const emailVerificationLink = `${process.env.HOST}/${req.body.emailverificationtoken}`;
+    const emailVerificationLink = `${config.HOST}/${req.body.emailverificationtoken}`;
     await sendEmail(email, "Verify Your Email", emailVerificationLink);
-
-    // check his email and use the link to verify his account or regenerate the email if they didnt see it or it has expired
-    // dont forget to add expiry date to it
-    // also implement a functionality to regenerate email verification mail incase the old one expired before they can be used
 
     return Response.successResponse(res, {
       code: 206,
+      data: details,
       message: "account registered, check email for verification link",
     });
   } catch (error) {

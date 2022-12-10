@@ -1,6 +1,13 @@
 {
-    "dev": {
-        "ENV": "DB_URL"
+    "defaultEnv": "development",
+    "development": {
+      "ENV": "DEV_DB_URL"
     },
-    "sql-file": true
+    "test": {
+      "ENV": "TEST_DB_URL"
+    },
+    "production": {
+      "ENV": "PROD_DB_URL"
+    },
+    "sql-file" : true
 }

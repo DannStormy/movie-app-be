@@ -31,7 +31,7 @@ export default class ValidationHelper {
       "string.base": "Password must be a string",
       "string.empty": "Password field cannot be empty",
       "any.required": "Password field is required",
-      "string.min": "Password cannot be less than 7 characters",
+      "string.min": "Password cannot be less than 5 characters",
     });
   }
 

@@ -1,10 +1,15 @@
 /* Replace with your SQL commands */
-CREATE table users (
-    id SERIAL PRIMARY KEY,
-    firstName TEXT NOT NULL,
-    lastName TEXT NOT NULL,
-    email TEXT NOT NULL,
-    password TEXT NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT now(),
-    updated_at TIMESTAMPTZ DEFAULT now()
-);
+-- CREATE table users (
+--     id SERIAL PRIMARY KEY,
+--     firstName TEXT NOT NULL,
+--     lastName TEXT NOT NULL,
+--     email TEXT NOT NULL,
+--     password TEXT NOT NULL,
+--     role_id INTEGER REFERENCES roles(role_id),
+--     emailverificationtoken TEXT DEFAULT NULL,
+--     email_verification_expire TEXT DEFAULT NULL,
+--     password_reset_string TEXT DEFAULT NULL,
+--     password_reset_expire TEXT DEFAULT NULL,
+--     created_at TIMESTAMPTZ DEFAULT now(),
+--     updated_at TIMESTAMPTZ DEFAULT now()
+-- );

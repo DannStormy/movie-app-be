@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS rating(
     movieId INTEGER REFERENCES movies(id),
     userId INTEGER REFERENCES users(id),
     rating numeric(3, 2) DEFAULT NULL,
+    review TEXT,
     created_at TIMESTAMPTZ DEFAULT now(),
     updated_at TIMESTAMPTZ DEFAULT now()
 )

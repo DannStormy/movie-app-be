@@ -79,4 +79,11 @@ export default {
     FROM ratings
     WHERE movie_id = $1
   `,
+
+  getMovieWithRating: `
+    SELECT m.id, m.title, m.genre, m.year, ROUND(AVG(r.rating), 2) AS average_rating, json_agg(r.review) AS reviews 
+    FROM movies m LEFT JOIN ratings r ON m.id = r.movie_id 
+    WHERE movie_id = $1 and deleted = false
+    GROUP BY m.id, m.title, m.genre
+`,
 };

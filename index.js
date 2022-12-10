@@ -6,7 +6,7 @@ import helmet from "helmet";
 import logger from "./src/logger";
 import router from "./src/routes";
 
-const app = express();
+export const app = express();
 
 const port = config.PORT || 1000;
 
@@ -17,6 +17,6 @@ app.use(helmet());
 app.use(cors());
 app.use(router);
 
-app.listen(3000, () => {
+app.listen(port, () => {
   logger.info(`Application running on port ${port}`);
 });

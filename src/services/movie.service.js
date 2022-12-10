@@ -95,10 +95,7 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async getRatingsAndReviews(movieId) {
-    return Promise.all([
-      MovieService.getMovieByID(movieId),
-      MovieService.getMovieRatings(movieId),
-    ]);
+    return db.oneOrNone(movie_queries.getMovieWithRating, [movieId])
   }
 
   /**
