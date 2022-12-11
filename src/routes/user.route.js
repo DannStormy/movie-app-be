@@ -6,6 +6,7 @@ import {
   forgotPassword,
   resetPassword,
   regenerateEmailVerificationToken,
+  regeneratePasswordResetToken,
 } from "../controllers/user.controller.js";
 import UserMiddleware from "../middlewares/user.middleware.js";
 import AuthMiddleware from "../middlewares/auth.middleware";
@@ -25,7 +26,7 @@ router.post(
 );
 
 router.put(
-  "/verify-email/:emailToken",
+  "/verify-email",
   UserMiddleware.validateEmailVerificationToken,
   verifyEmail
 );
@@ -37,13 +38,22 @@ router.put(
   regenerateEmailVerificationToken
 );
 
+router.put(
+  "/regenerate-password-token",
+  validate(schema.checkEmailSchema),
+  UserMiddleware.emailDoesNotExist,
+  regeneratePasswordResetToken
+);
+
 router.post(
   "/login",
   validate(schema.loginSchema),
-  UserMiddleware.emailDoesNotExist,
-  UserMiddleware.validateUserActive,
-  UserMiddleware.validateUserEmail,
-  UserMiddleware.validateUserPassword,
+  [
+    UserMiddleware.emailDoesNotExist,
+    UserMiddleware.validateUserActive,
+    UserMiddleware.validateUserEmail,
+    UserMiddleware.validateUserPassword,
+  ],
   login
 );
 
@@ -55,10 +65,11 @@ router.post(
 );
 
 router.post(
-  "/resetpassword/:resetPasswordToken",
+  "/resetpassword",
   validate(schema.passwordReset),
   validateResetPasswordToken,
-  resetPassword
+  resetPassword,
+  login
 );
 
 export default router;

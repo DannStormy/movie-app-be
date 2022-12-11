@@ -1,7 +1,9 @@
 export const userDetails = [
   "id",
+  "name",
   "firstname",
   "lastname",
   "email",
-  "createdAt",
+  "emailverificationtoken",
+  "created_at",
 ];

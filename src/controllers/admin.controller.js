@@ -1,8 +1,10 @@
+import _ from "lodash";
 import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
 import AdminService from "../services/admin.service";
 import { Response, apiMessage } from "../utils/helpers/constants";
 import sendEmail from "../utils/helpers/mailer/mailer";
+import { userDetails } from "../utils/helpers/constants/constants";
 
 const { generateJWT } = Helper;
 
@@ -11,10 +13,10 @@ export const adminLogin = async (req, res) => {
     const data = { userId: req.user.id, role: req.user.role_id };
     let token = generateJWT(data);
 
-    delete req.user.password;
+    const details = _.pick(req.user, userDetails);
 
     return Response.successResponse(res, {
-      data: { ...token, user: req.user },
+      data: { ...token, user: details },
       message: apiMessage.LOGIN_USER_SUCCESSFULLY,
     });
   } catch (error) {
@@ -39,15 +41,14 @@ export const fetchUsers = async (req, res) => {
 
 export const createNewAdmin = async (req, res) => {
   try {
+    req.body.password_reset_string = randomstring.generate();
+    req.body.password_reset_expire = Helper.setTokenExpire(1);
+
     const admin = await AdminService.createAdmin(req.body);
-    const randomString = randomstring.generate();
-
-    await AdminService.passwordResetString(randomString, admin.id);
-
-    const link = `${process.env.HOST}/${req.body.email}/${randomString}`;
+    const link = `https://movie.io/resetpassword/${req.body.password_reset_string}`;
 
     await sendEmail(
-      req.body.email,
+      admin.email,
       "Reset Default Password",
       `You have been registered as an admin on MovieApp.io, click on this ${link} to set your password.`
     );
@@ -55,6 +56,24 @@ export const createNewAdmin = async (req, res) => {
     return Response.successResponse(res, {
       code: 201,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("admin"),
+    });
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+};
+
+export const regeneratePasswordResetToken = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const token = randomstring.generate();
+    const tokenExpire = Helper.setTokenExpire(1);
+
+    await AdminService.regeneratePasswordResetToken(token, tokenExpire, email);
+    await sendEmail(email, "Reset Password", token);
+
+    return Response.successResponse(res, {
+      message: "check email for reset password link",
     });
   } catch (error) {
     logger.error(error);
@@ -90,9 +109,14 @@ export const changeAdminStatus = async (req, res) => {
 
 export const adminResetPassword = async (req, res) => {
   try {
-    await AdminService.adminResetPassword(req.body.password, req.params.email);
+    const {
+      body: { password },
+      user: { email },
+    } = req;
+
+    await AdminService.adminResetPassword(password, email);
     await sendEmail(
-      req.params.email,
+      email,
       "Password Changed",
       `Your password has been reset. If you did not initiate this action, request help @`
     );

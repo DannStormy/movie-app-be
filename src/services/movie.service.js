@@ -83,28 +83,29 @@ export default class MovieService {
   }
 
   /**
-   * returns average rating of movie and reviews with given ID
-   * @memberof MovieService
-   */
-  static async getMovieRatings(movieId) {
-    return db.any(movie_queries.getMovieRatings, [movieId]);
-  }
-
-  /**
    * returns one movie/avg rating & reviews
    * @memberof MovieService
    */
   static async getRatingsAndReviews(movieId) {
-    return db.oneOrNone(movie_queries.getMovieWithRating, [movieId])
+    return db.oneOrNone(movie_queries.getMovieByIdWithRating, [movieId])
   }
 
   /**
-   * get user movie ratings and reviews
+   * get user all movie ratings and reviews
    * @memberof MovieService
    */
   static async getMovieRating(userId) {
-    return db.manyOrNone(movie_queries.getUserMovieRating, [userId]);
+    return db.manyOrNone(movie_queries.getAllUserMovieRating, [userId]);
   }
+
+  /**
+   * get user all movie ratings and reviews
+   * @memberof MovieService
+   */
+  static async findUserMovieRating(movieId, userId) {
+    return db.oneOrNone(movie_queries.findUserMovieRating, [movieId, userId]);
+  }
+
   /**
    * rate movie with given ID
    * @memberof MovieService
@@ -127,6 +128,6 @@ export default class MovieService {
    * @memberof MovieService
    */
   static async editRating(rating, review, movieId, userId) {
-    return db.any(movie_queries.editRating, [rating, review, movieId, userId]);
+    return db.oneOrNone(movie_queries.editRating, [rating, review, movieId, userId]);
   }
 }

@@ -17,8 +17,16 @@ export default {
   updatePasswordResetString: `
       UPDATE users
       SET password_reset_string = $1,
+      password_reset_expire = $2,
       updated_at = NOW()
-      WHERE id = $2
+      WHERE id = $3
+`,
+  regeneratePasswordResetString: `
+      UPDATE users
+      SET password_reset_string = $1,
+      password_reset_expire = $2,
+      updated_at = NOW()
+      WHERE email = $3
 `,
   updateEmailVerificationToken: `
       UPDATE users
@@ -31,6 +39,7 @@ export default {
       UPDATE users
       SET password = $1,
       password_reset_string = NULL,
+      password_reset_expire = NULL,
       updated_at = NOW()
       WHERE email = $2
   `,
@@ -41,7 +50,7 @@ export default {
       WHERE email = $1
   `,
   fetchPasswordToken: `
-      SELECT *
+      SELECT password_reset_string, email, password_reset_expire
       FROM users
       WHERE password_reset_string = $1;
   `,

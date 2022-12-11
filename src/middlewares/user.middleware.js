@@ -65,7 +65,6 @@ export default class UserMiddleware {
     }
   }
 
-  //NOT WORKING
   /**
    * compare user passwords
    * @static
@@ -77,12 +76,10 @@ export default class UserMiddleware {
   static async validateUserPassword(req, res, next) {
     try {
       const { user, body } = req;
-      const passwordMatch = Helper.comparePasswordHash(
+      const passwordMatch = await Helper.comparePasswordHash(
         body.password,
         user.password
       );
-
-      console.log(await passwordMatch);
 
       if (!passwordMatch) {
         return Response.errorResponse(req, res, {
@@ -169,7 +166,7 @@ export default class UserMiddleware {
         data: { userId },
       } = req;
 
-      const rating = await MovieService.getMovieRating(movieId, userId);
+      const rating = await MovieService.findUserMovieRating(movieId, userId);
 
       if (rating) {
         return Response.errorResponse(req, res, {
@@ -196,16 +193,21 @@ export default class UserMiddleware {
 
   static async validateResetPasswordToken(req, res, next) {
     try {
-      const {
-        params: { resetPasswordToken },
-      } = req;
+      const { resetPasswordToken } = req.body;
       const user = await UserService.fetchPasswordToken(resetPasswordToken);
       const data = _.pick(user, userDetails);
 
-      if (!user.password_reset_string) {
+      if (!user) {
         return Response.errorResponse(req, res, {
           status: 404,
           message: apiMessage.RESOURCE_NOT_FOUND("reset password string"),
+        });
+      }
+
+      if (Helper.validateTokenExpiry(user.password_reset_expire)) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: "password reset token expired",
         });
       }
 

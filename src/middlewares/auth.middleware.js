@@ -1,3 +1,4 @@
+import config from "../config";
 import Helper from "../utils/helpers/helpers";
 import { Response, apiMessage } from "../utils/helpers/constants";
 
@@ -84,8 +85,8 @@ export default class AuthMiddleware {
 
     try {
       const decoded = req.body.refreshToken
-        ? Helper.verifyToken(token, process.env.REFRESH_SECRET)
-        : Helper.verifyToken(token, process.env.JWT_SECRET_KEY);
+        ? Helper.verifyToken(token, config.REFRESH_SECRET)
+        : Helper.verifyToken(token, config.JWT_SECRET_KEY);
 
       req.data = decoded;
       

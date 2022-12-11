@@ -90,7 +90,10 @@ export const deleteMovie = async (req, res) => {
 };
 
 export const editTitle = async (req, res) => {
-  const { title, movieId } = req.body;
+  const {
+    body: { title },
+    params: { movieId },
+  } = req;
   try {
     await MovieService.editTitle(title, movieId);
 

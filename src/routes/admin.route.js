@@ -8,22 +8,38 @@ import schema from "../validations/schema.js";
 const router = Router();
 
 const { isSuper } = AccessControlMiddleware;
-const { loginSchema, createAdminSchema, changeStatusSchema, passwordReset } =
-  schema;
+const {
+  loginSchema,
+  createAdminSchema,
+  changeStatusSchema,
+  passwordReset,
+  checkEmailSchema,
+} = schema;
 const { authenticate, validate } = AuthMiddleware;
 
 router.post(
   "/login",
   validate(loginSchema),
-  AdminMiddleware.checkDetails,
+  [
+    AdminMiddleware.emailDoesNotExist,
+    AdminMiddleware.validateAdminActive,
+    AdminMiddleware.validateAdminPassword,
+  ],
   adminControllers.adminLogin
 );
 
 router.post(
-  "/resetpassword/:email/:resetString",
+  "/resetpassword",
   validate(passwordReset),
-  AdminMiddleware.checkResetPasswordString,
+  AdminMiddleware.validateResetPasswordToken,
   adminControllers.adminResetPassword
+);
+
+router.put(
+  "/regenerate-password-token",
+  validate(checkEmailSchema),
+  AdminMiddleware.emailDoesNotExist,
+  adminControllers.regeneratePasswordResetToken
 );
 
 router.use([authenticate, isSuper]);

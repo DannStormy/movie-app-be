@@ -12,8 +12,8 @@ export default {
     FROM users
     `,
   createAdmin: `
-    INSERT INTO admin(name, email, role_id)
-    VALUES ($1, $2, $3)
+    INSERT INTO admin(name, email, role_id, password_reset_string, password_reset_expire)
+    VALUES ($1, $2, $3, $4, $5)
     RETURNING *
   `,
   findUserByID: `

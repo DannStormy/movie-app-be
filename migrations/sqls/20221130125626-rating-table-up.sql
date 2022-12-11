@@ -1,8 +1,8 @@
 /* Replace with your SQL commands */
-CREATE TABLE IF NOT EXISTS rating(
+CREATE TABLE IF NOT EXISTS ratings(
     id SERIAL PRIMARY KEY,
-    movieId INTEGER REFERENCES movies(id),
-    userId INTEGER REFERENCES users(id),
+    movie_id INTEGER REFERENCES movies(id),
+    user_id INTEGER REFERENCES users(id),
     rating numeric(3, 2) DEFAULT NULL,
     review TEXT,
     created_at TIMESTAMPTZ DEFAULT now(),

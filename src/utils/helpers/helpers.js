@@ -1,3 +1,4 @@
+import config from "../../config";
 import db from "../../config/db/config";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -65,8 +66,7 @@ export default class Helper {
    * @returns {Boolean}
    */
   static async comparePasswordHash(password, hash) {
-    const result = await bcrypt.compare(password, hash);
-    return result;
+    return bcrypt.compare(password, hash);
   }
 
   /**
@@ -76,10 +76,10 @@ export default class Helper {
    * @returns {String}
    */
   static generateJWT(data) {
-    const token = jwt.sign(data, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign(data, config.JWT_SECRET_KEY, {
       expiresIn: "1d",
     });
-    const refreshToken = jwt.sign(data, process.env.REFRESH_SECRET);
+    const refreshToken = jwt.sign(data, config.REFRESH_SECRET);
     return { token, refreshToken };
   }
 

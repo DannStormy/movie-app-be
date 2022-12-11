@@ -29,3 +29,18 @@ export const devLogger = ()=> {
     transports: [new transports.Console()],
   });
 }
+
+export const testLogger = ()=> {
+  const logFormat = printf(({ level, message, timestamp, stack }) => {
+    return `${timestamp} - ${level.toUpperCase().padEnd(5)} - ${ stack || message }`;
+  });
+
+  return createLogger({
+    format: combine(
+      timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
+      errors({ stack: true }),
+      logFormat
+    ),
+    transports: [new transports.Console()],
+  });
+}

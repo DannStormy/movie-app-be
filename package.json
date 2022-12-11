@@ -21,7 +21,7 @@
     "seed:reset": "npm run migrate reset:seeds",
     "seed:reset:test": "db-migrate reset:seeds --config database.json -e test",
     "seed:up:test": "db-migrate up:seeds --config database.json -e test"
-  }, 
+  },
   "author": "Daniel Isaac",
   "license": "ISC",
   "dependencies": {
@@ -48,6 +48,7 @@
     "winston": "^3.8.2"
   },
   "devDependencies": {
+    "@faker-js/faker": "^7.6.0",
     "assert": "^2.0.0",
     "chai-http": "^4.3.0",
     "dotenv": "^16.0.3",

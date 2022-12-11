@@ -24,6 +24,7 @@ export default {
 
   passwordReset: Joi.object({
     password: passwordCheck(),
+    resetPasswordToken: stringCheck("resetPasswordToken"),
   }),
 
   loginSchema: Joi.object({
@@ -60,7 +61,7 @@ export default {
     rating: Joi.optional(),
     review: Joi.optional(),
   }),
-  
+
   editReviewSchema: Joi.object({
     review: stringCheck("Review"),
   }),

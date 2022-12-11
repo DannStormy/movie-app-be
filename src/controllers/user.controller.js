@@ -88,9 +88,11 @@ export const forgotPassword = async (req, res) => {
     const { user } = req;
 
     const token = randomstring.generate();
-    await UserService.updatePasswordResetString(token, user.id);
+    const tokenExpire = Helper.setTokenExpire(1);
 
-    const passwordResetLink = `${process.env.HOST}/${user.email}/${token}`;
+    await UserService.updatePasswordResetString(token, tokenExpire, user.id);
+
+    const passwordResetLink = `https://movie.io/forgotpassword/${token}`;
     await sendEmail(user.email, "Forgot Password", passwordResetLink);
 
     return Response.successResponse(res, {
@@ -103,27 +105,37 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
+//tomorrow
+export const regeneratePasswordResetToken = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const token = randomstring.generate();
+    const tokenExpire = Helper.setTokenExpire(1);
+
+    await UserService.regeneratePasswordResetToken(token, tokenExpire, email);
+    await sendEmail(email, "Reset Password", token);
+
+    return Response.successResponse(res, {
+      message: "check email for reset password link",
+    });
+  } catch (error) {
+    logger.error(error);
+    return error;
+  }
+};
+
 export const resetPassword = async (req, res) => {
   try {
     const {
       body: { password },
-      user: { id, email, role_id },
+      user: { email },
     } = req;
 
     await updatePassword(password, email);
-    await sendEmail(
-      email,
-      "Password Changed",
-      `Your password has been reset. If you did not initiate this action, request help @`
-    );
-
-    const data = { id, role_id };
-    const token = generateJWT(data);
-    const user = _.pick(req.user, userDetails);
+    await sendEmail(email, apiMessage.RESET_PASSWORD_MAIL_SUCCESS);
 
     return Response.successResponse(res, {
-      data: { ...token, user: user },
-      message: apiMessage.LOGIN_USER_SUCCESSFULLY,
+      message: apiMessage.RESET_PASSWORD_SUCCESS,
     });
   } catch (error) {
     logger.error(error);

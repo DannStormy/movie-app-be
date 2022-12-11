@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { userDetails } from "../utils/helpers/constants/constants";
 import Helper from "../utils/helpers/helpers";
 import AdminService from "../services/admin.service";
 import MovieService from "../services/movie.service";
@@ -5,28 +7,50 @@ import { Response, apiMessage } from "../utils/helpers/constants";
 
 export default class AdminMiddleware {
   /**
-   * find admin in admin table
+   * Checks if admin does not exists
    * @static
    * @param {Request} req - The request from the endpoint.
    * @param {Response} res - The response returned by the method.
    * @param {Next} next - The function that calls the next handler.
    * @returns { JSON } - Returns message
    */
-  static async checkDetails(req, res, next) {
+
+  static async emailDoesNotExist(req, res, next) {
     try {
-      const { email, password } = req.body;
-      const admin = await AdminService.findAdminByEmail(email);
+      const { email } = req.body;
+      const admin = await AdminService.findAdminByEmail(
+        email.trim().toLowerCase()
+      );
 
       if (!admin) {
         return Response.errorResponse(req, res, {
-          status: 400,
-          message: apiMessage.INVALID_CREDENTIALS,
+          status: 409,
+          message: "Invalid credentials",
         });
       }
 
-      const passwordMatch = Helper.comparePasswordHash(
-        password,
-        admin.password
+      req.user = admin;
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
+
+  /**
+   * compare admin passwords
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+  static async validateAdminPassword(req, res, next) {
+    try {
+      const { user, body } = req;
+      const passwordMatch = await Helper.comparePasswordHash(
+        body.password,
+        user.password
       );
 
       if (!passwordMatch) {
@@ -36,16 +60,33 @@ export default class AdminMiddleware {
         });
       }
 
-      const active = await Helper.isActive(admin.id, admin.role_id);
+      return next();
+    } catch (error) {
+      logger.error(error);
+      return error;
+    }
+  }
 
-      if (!active) {
+  /**
+   * check if admin account is active
+   * @static
+   * @param {Request} req - The request from the endpoint.
+   * @param {Response} res - The response returned by the method.
+   * @param {Next} next - The function that calls the next handler.
+   * @returns { JSON } - Returns message
+   */
+  static async validateAdminActive(req, res, next) {
+    try {
+      const { user } = req;
+
+      if (!user.status) {
         return Response.errorResponse(req, res, {
           status: 401,
           message: apiMessage.ACCOUNT_INACTIVE,
         });
       }
 
-      req.user = admin;
+      req.user = user;
 
       return next();
     } catch (error) {
@@ -152,23 +193,35 @@ export default class AdminMiddleware {
    * @returns { JSON } - Returns message
    */
 
-  static async checkResetPasswordString(req, res, next) {
+  static async validateResetPasswordToken(req, res, next) {
     try {
-      const dbString = await AdminService.findAdminByEmail(req.params.email);
+      const { resetPasswordToken } = req.body;
 
-      if (!dbString.password_reset_string) {
+      const admin = await AdminService.fetchPasswordToken(resetPasswordToken);
+      const data = _.pick(admin, userDetails);
+
+      if (!admin) {
         return Response.errorResponse(req, res, {
           status: 404,
           message: apiMessage.RESOURCE_NOT_FOUND("reset password string"),
         });
       }
 
-      if (dbString.password_reset_string != req.params.resetString) {
+      if (Helper.validateTokenExpiry(admin.password_reset_expire)) {
+        return Response.errorResponse(req, res, {
+          status: 401,
+          message: "password reset token expired",
+        });
+      }
+
+      if (admin.password_reset_string !== resetPasswordToken) {
         return Response.errorResponse(req, res, {
           status: 400,
           message: apiMessage.AUTH_REQUIRED,
         });
       }
+
+      req.user = data;
 
       return next();
     } catch (error) {

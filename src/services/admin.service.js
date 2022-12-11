@@ -48,9 +48,16 @@ export default class AdminService {
    * @memberof AdminService
    */
   static async createAdmin(data) {
-    let { name, email, role_id } = data;
+    let { name, email, role_id, password_reset_string, password_reset_expire } =
+      data;
     email = email.trim().toLowerCase();
-    return db.oneOrNone(super_queries.createAdmin, [name, email, role_id]);
+    return db.oneOrNone(super_queries.createAdmin, [
+      name,
+      email,
+      role_id,
+      password_reset_string,
+      password_reset_expire,
+    ]);
   }
   /**
    * fetch admin by id
@@ -92,11 +99,28 @@ export default class AdminService {
     password = Helper.generatePasswordHash(password);
     return db.none(adminQueries.adminResetPassword, [password, email]);
   }
+
+  /**
+   *  fetch password reset token
+   * @memberof AdminService
+   */
+  static async fetchPasswordToken(token) {
+    return db.oneOrNone(adminQueries.fetchPasswordToken, [token]);
+  }
+
   /**
    *  set password reset string
    * @memberof AdminService
    */
   static async passwordResetString(string, adminId) {
     return db.none(adminQueries.updatePasswordResetString, [string, adminId]);
+  }
+
+  /**
+   *  regenerate password reset token 
+   * @memberof AdminService
+   */
+  static async regeneratePasswordResetToken(token, tokenExpire, email) {
+    return db.none(adminQueries.updatePasswordResetString, [token, tokenExpire, email]);
   }
 }
