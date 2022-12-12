@@ -19,13 +19,6 @@ export default {
       SET password_reset_string = $1,
       password_reset_expire = $2,
       updated_at = NOW()
-      WHERE id = $3
-`,
-  regeneratePasswordResetString: `
-      UPDATE users
-      SET password_reset_string = $1,
-      password_reset_expire = $2,
-      updated_at = NOW()
       WHERE email = $3
 `,
   updateEmailVerificationToken: `

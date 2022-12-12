@@ -19,7 +19,7 @@ export const fetchMovieByID = async (req, res) => {
   try {
     const movie = await MovieService.getRatingsAndReviews(req.params.movieId);
     return Response.successResponse(res, {
-      data: movie, //destructure response
+      data: movie,
       message: apiMessage.RESOURCE_FETCH_SUCCESS("Movie"),
     });
   } catch (error) {

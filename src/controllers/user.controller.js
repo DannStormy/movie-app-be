@@ -85,12 +85,11 @@ export const verifyEmail = async (req, res) => {
 
 export const forgotPassword = async (req, res) => {
   try {
-    const { user } = req;
-
+    const { email } = req.body;
     const token = randomstring.generate();
     const tokenExpire = Helper.setTokenExpire(1);
 
-    await UserService.updatePasswordResetString(token, tokenExpire, user.id);
+    await UserService.updatePasswordResetString(token, tokenExpire, email);
 
     const passwordResetLink = `https://movie.io/forgotpassword/${token}`;
     await sendEmail(user.email, "Forgot Password", passwordResetLink);
@@ -105,14 +104,13 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-//tomorrow
 export const regeneratePasswordResetToken = async (req, res) => {
   try {
     const { email } = req.body;
     const token = randomstring.generate();
     const tokenExpire = Helper.setTokenExpire(1);
 
-    await UserService.regeneratePasswordResetToken(token, tokenExpire, email);
+    await UserService.updatePasswordResetString(token, tokenExpire, email);
     await sendEmail(email, "Reset Password", token);
 
     return Response.successResponse(res, {

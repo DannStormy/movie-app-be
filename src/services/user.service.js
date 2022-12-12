@@ -68,7 +68,11 @@ export default class UserService {
    * @memberof UserService
    */
   static async updateEmailVerificationToken(token, token_expire, email) {
-    return db.none(user_queries.updateEmailVerificationToken, [token, token_expire, email]);
+    return db.none(user_queries.updateEmailVerificationToken, [
+      token,
+      token_expire,
+      email,
+    ]);
   }
 
   /**
@@ -83,8 +87,12 @@ export default class UserService {
    *  set password reset token
    * @memberof UserService
    */
-  static async updatePasswordResetString(token, tokenExpire, userId) {
-    return db.none(user_queries.updatePasswordResetString, [token, tokenExpire, userId]);
+  static async updatePasswordResetString(token, tokenExpire, email) {
+    return db.none(user_queries.updatePasswordResetString, [
+      token,
+      tokenExpire,
+      email,
+    ]);
   }
 
   /**
@@ -93,14 +101,6 @@ export default class UserService {
    */
   static async fetchPasswordToken(token) {
     return db.oneOrNone(user_queries.fetchPasswordToken, [token]);
-  }
-
-  /**
-   *  regenerate password reset token 
-   * @memberof UserService
-   */
-   static async regeneratePasswordResetToken(token, tokenExpire, email) {
-    return db.none(user_queries.regeneratePasswordResetToken, [token, tokenExpire, email]);
   }
 
   /**
