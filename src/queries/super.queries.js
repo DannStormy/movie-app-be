@@ -17,12 +17,12 @@ export default {
     RETURNING *
   `,
   findUserByID: `
-        SELECT * FROM client_account_status
+        SELECT * FROM users
         WHERE id = $1
 `,
   setClientStatus: `
-        UPDATE client_account_status
-        SET status = $1
+        UPDATE users
+        SET is_active = $1
         WHERE id = $2;
 `,
   setAdminStatus: `

@@ -173,7 +173,7 @@ export default class AdminMiddleware {
       if (!user) {
         return Response.errorResponse(req, res, {
           status: 404,
-          message: apiMessage.RESOURCE_NOT_FOUND("admin"),
+          message: apiMessage.RESOURCE_NOT_FOUND("user"),
         });
       }
 
