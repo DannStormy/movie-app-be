@@ -57,7 +57,7 @@ router.post(
   login
 );
 
-router.post(
+router.put(
   "/forgotpassword",
   validate(schema.checkEmailSchema),
   emailDoesNotExist,

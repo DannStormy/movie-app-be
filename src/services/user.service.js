@@ -1,3 +1,4 @@
+import randomstring from "randomstring";
 import db from "../config/db/config";
 import Helper from "../utils/helpers/helpers";
 import user_queries from "../queries/user.queries";

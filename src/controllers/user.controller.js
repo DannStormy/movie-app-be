@@ -22,6 +22,13 @@ export const register = async (req, res) => {
     const user = await addUser(req.body);
     const details = _.pick(user, userDetails);
 
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        code: 206,
+        data: details,
+        message: "account registered, check email for verification link",
+      });
+
     const emailVerificationLink = `${config.HOST}/${req.body.emailverificationtoken}`;
     await sendEmail(email, "Verify Your Email", emailVerificationLink);
 
@@ -41,9 +48,17 @@ export const regenerateEmailVerificationToken = async (req, res) => {
     const { email } = req.body;
     const token = randomstring.generate();
     const tokenExpire = Helper.setTokenExpire(1);
-
+    
     await UserService.updateEmailVerificationToken(token, tokenExpire, email);
-    await sendEmail(email, "Verify Your Email", token);
+
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        code: 206,
+        data: token,
+        message: "check email for verification link",
+      });
+
+    await sendEmail(email, "verify your email", token);
 
     return Response.successResponse(res, {
       message: "check email for verification link",
@@ -90,13 +105,17 @@ export const forgotPassword = async (req, res) => {
     const tokenExpire = Helper.setTokenExpire(1);
 
     await UserService.updatePasswordResetString(token, tokenExpire, email);
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
+        data: token,
+      });
 
     const passwordResetLink = `https://movie.io/forgotpassword/${token}`;
-    await sendEmail(user.email, "Forgot Password", passwordResetLink);
+    await sendEmail(email, "Forgot Password", passwordResetLink);
 
     return Response.successResponse(res, {
       message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
-      code: 200,
     });
   } catch (error) {
     logger.error(error);
@@ -111,6 +130,13 @@ export const regeneratePasswordResetToken = async (req, res) => {
     const tokenExpire = Helper.setTokenExpire(1);
 
     await UserService.updatePasswordResetString(token, tokenExpire, email);
+
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        data: token,
+        message: "check email for reset password link",
+      });
+      
     await sendEmail(email, "Reset Password", token);
 
     return Response.successResponse(res, {

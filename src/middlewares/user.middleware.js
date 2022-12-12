@@ -53,7 +53,7 @@ export default class UserMiddleware {
       if (!user) {
         return Response.errorResponse(req, res, {
           status: 409,
-          message: "Invalid credentials",
+          message: "invalid credentials",
         });
       }
 
@@ -200,7 +200,7 @@ export default class UserMiddleware {
       if (!user) {
         return Response.errorResponse(req, res, {
           status: 404,
-          message: apiMessage.RESOURCE_NOT_FOUND("reset password string"),
+          message: apiMessage.RESOURCE_NOT_FOUND("reset password token"),
         });
       }
 
@@ -238,7 +238,7 @@ export default class UserMiddleware {
 
   static async validateEmailVerificationToken(req, res, next) {
     try {
-      const { emailToken } = req.params;
+      const { emailToken } = req.body;
       const user = await UserService.fetchEmailVerificationToken(emailToken);
 
       if (!user) {
