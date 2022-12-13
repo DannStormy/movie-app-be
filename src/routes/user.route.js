@@ -27,6 +27,7 @@ router.post(
 
 router.put(
   "/verify-email",
+  validate(schema.checkEmailToken),
   UserMiddleware.validateEmailVerificationToken,
   verifyEmail
 );
@@ -64,12 +65,11 @@ router.put(
   forgotPassword
 );
 
-router.post(
+router.put(
   "/resetpassword",
   validate(schema.passwordReset),
   validateResetPasswordToken,
-  resetPassword,
-  login
+  resetPassword
 );
 
 export default router;

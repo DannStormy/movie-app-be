@@ -1,6 +1,15 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
-import { testClient, clientLogin } from "../fixtures/client";
+import {
+  testClient,
+  clientLogin,
+  firstNameAbsent,
+  lastNameAbsent,
+  emailAbsent,
+  passwordAbsent,
+  missingClientEmail,
+  missingClientPassword,
+} from "../fixtures/client";
 import { apiMessage } from "../../utils/helpers/constants";
 import app from "../../../index";
 
@@ -19,8 +28,57 @@ describe("Client Routes", () => {
         expect(res.body.message).to.equal(
           "account registered, check email for verification link"
         );
+        process.env.EMAIL = res.body.data.email;
         process.env.EMAIL_VERIFICATION_TOKEN =
           res.body.data.emailverificationtoken;
+        done(err);
+      });
+  });
+
+  it("should fail to sign up client if firstName is missing", (done) => {
+    chai
+      .request(app)
+      .post("/user/register")
+      .set("Content-Type", "application/json")
+      .send(firstNameAbsent)
+      .end((err, res) => {
+        expect(res.body.message).to.equal("firstName is a required field");
+        done(err);
+      });
+  });
+
+  it("should fail to sign up client if lastName is missing", (done) => {
+    chai
+      .request(app)
+      .post("/user/register")
+      .set("Content-Type", "application/json")
+      .send(lastNameAbsent)
+      .end((err, res) => {
+        expect(res.body.message).to.equal("lastName is a required field");
+        done(err);
+      });
+  });
+
+  it("should fail to sign up client if email is missing", (done) => {
+    chai
+      .request(app)
+      .post("/user/register")
+      .set("Content-Type", "application/json")
+      .send(emailAbsent)
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Email is a required field");
+        done(err);
+      });
+  });
+
+  it("should fail to sign up client if password is missing", (done) => {
+    chai
+      .request(app)
+      .post("/user/register")
+      .set("Content-Type", "application/json")
+      .send(passwordAbsent)
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Password field is required");
         done(err);
       });
   });
@@ -29,11 +87,21 @@ describe("Client Routes", () => {
     chai
       .request(app)
       .put("/user/regenerate-email-token")
-      .send({ email: testClient.email })
+      .send({ email: process.env.EMAIL })
       .end((err, res) => {
         expect(res.body.message).to.equal("check email for verification link");
-        process.env.EMAIL_VERIFICATION_TOKEN =
-          res.body.data;
+        process.env.EMAIL_VERIFICATION_TOKEN = res.body.data;
+        done(err);
+      });
+  });
+
+  it("should fail to regenerate email verification token", (done) => {
+    chai
+      .request(app)
+      .put("/user/regenerate-email-token")
+      .send({})
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Email is a required field");
         done(err);
       });
   });
@@ -52,6 +120,18 @@ describe("Client Routes", () => {
       });
   });
 
+  it("should fail to verify client email", (done) => {
+    chai
+      .request(app)
+      .put("/user/verify-email")
+      .set("Content-Type", "application/json")
+      .send({})
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Token is a required field");
+        done(err);
+      });
+  });
+
   it("should login client", (done) => {
     chai
       .request(app)
@@ -65,17 +145,52 @@ describe("Client Routes", () => {
       });
   });
 
+  it("should not login client if email is missing", (done) => {
+    chai
+      .request(app)
+      .post("/user/login")
+      .set("Content-Type", "application/json")
+      .send(missingClientEmail)
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Email is a required field");
+        done(err);
+      });
+  });
+
+  it("should not login client if password is missing", (done) => {
+    chai
+      .request(app)
+      .post("/user/login")
+      .set("Content-Type", "application/json")
+      .send(missingClientPassword)
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Password field is required");
+        done(err);
+      });
+  });
+
   it("should send reset password mail", (done) => {
     chai
       .request(app)
       .put("/user/forgotpassword")
-      .send({ email: testClient.email })
+      .send({ email: process.env.EMAIL })
       .end((err, res) => {
         expect(res.body.status).to.equal("success");
         expect(res.body.message).to.equal(
           apiMessage.RESET_PASSWORD_MAIL_SUCCESS
         );
-        process.env.PASSWORD_RESET_TOKEN = res.body.data.token;
+        process.env.PASSWORD_RESET_TOKEN = res.body.data;
+        done(err);
+      });
+  });
+
+  it("should not send reset password mail", (done) => {
+    chai
+      .request(app)
+      .put("/user/forgotpassword")
+      .send({})
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Email is a required field");
         done(err);
       });
   });
@@ -84,11 +199,53 @@ describe("Client Routes", () => {
     chai
       .request(app)
       .put("/user/regenerate-password-token")
-      .send({ email: testClient.email })
+      .send({ email: process.env.EMAIL })
       .end((err, res) => {
-        expect(res.body.message).to.equal("check email for reset password link");
-        process.env.EMAIL_VERIFICATION_TOKEN =
-          res.body.data;
+        expect(res.body.message).to.equal(
+          "check email for reset password link"
+        );
+        process.env.PASSWORD_RESET_TOKEN = res.body.data;
+        done(err);
+      });
+  });
+
+  it("should not regenerate password reset token", (done) => {
+    chai
+      .request(app)
+      .put("/user/regenerate-password-token")
+      .send({})
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Email is a required field");
+        done(err);
+      });
+  });
+
+  it("should not reset client password if reset password token is missing", (done) => {
+    chai
+      .request(app)
+      .put("/user/resetpassword")
+      .set("Content-Type", "application/json")
+      .send({
+        password: "Daniel1",
+      })
+      .end((err, res) => {
+        expect(res.body.message).to.equal(
+          "resetPasswordToken is a required field"
+        );
+        done(err);
+      });
+  });
+
+  it("should not reset client password if password is missing", (done) => {
+    chai
+      .request(app)
+      .put("/user/resetpassword")
+      .set("Content-Type", "application/json")
+      .send({
+        resetPasswordToken: process.env.PASSWORD_RESET_TOKEN,
+      })
+      .end((err, res) => {
+        expect(res.body.message).to.equal("Password field is required");
         done(err);
       });
   });
@@ -96,16 +253,14 @@ describe("Client Routes", () => {
   it("should reset client password", (done) => {
     chai
       .request(app)
-      .put("/user/forgotpassword")
+      .put("/user/resetpassword")
       .set("Content-Type", "application/json")
       .send({
         password: "Daniel1",
         resetPasswordToken: process.env.PASSWORD_RESET_TOKEN,
       })
       .end((err, res) => {
-        expect(res.body.message).to.equal(
-          apiMessage.RESET_PASSWORD_SUCCESS
-        );
+        expect(res.body.message).to.equal(apiMessage.RESET_PASSWORD_SUCCESS);
         done(err);
       });
   });

@@ -49,7 +49,7 @@ export default class UserMiddleware {
     try {
       const { email } = req.body;
       const user = await getUserByEmail(email.trim().toLowerCase());
-
+      
       if (!user) {
         return Response.errorResponse(req, res, {
           status: 409,

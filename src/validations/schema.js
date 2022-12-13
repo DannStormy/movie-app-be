@@ -22,6 +22,10 @@ export default {
     email: emailCheck(),
   }),
 
+  checkEmailToken: Joi.object({
+    emailToken: stringCheck('Token')
+  }),
+
   passwordReset: Joi.object({
     password: passwordCheck(),
     resetPasswordToken: stringCheck("resetPasswordToken"),

@@ -48,7 +48,7 @@ export const regenerateEmailVerificationToken = async (req, res) => {
     const { email } = req.body;
     const token = randomstring.generate();
     const tokenExpire = Helper.setTokenExpire(1);
-    
+
     await UserService.updateEmailVerificationToken(token, tokenExpire, email);
 
     if (config.NODE_ENV === "test")
@@ -136,7 +136,7 @@ export const regeneratePasswordResetToken = async (req, res) => {
         data: token,
         message: "check email for reset password link",
       });
-      
+
     await sendEmail(email, "Reset Password", token);
 
     return Response.successResponse(res, {
@@ -156,6 +156,12 @@ export const resetPassword = async (req, res) => {
     } = req;
 
     await updatePassword(password, email);
+
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        message: apiMessage.RESET_PASSWORD_SUCCESS,
+      });
+
     await sendEmail(email, apiMessage.RESET_PASSWORD_MAIL_SUCCESS);
 
     return Response.successResponse(res, {
