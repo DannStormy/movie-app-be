@@ -120,7 +120,7 @@ export default class AdminService {
    *  regenerate password reset token 
    * @memberof AdminService
    */
-  static async regeneratePasswordResetToken(token, tokenExpire, email) {
+  static async updatePasswordResetToken(token, tokenExpire, email) {
     return db.none(adminQueries.updatePasswordResetString, [token, tokenExpire, email]);
   }
 }

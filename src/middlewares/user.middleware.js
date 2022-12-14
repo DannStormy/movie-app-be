@@ -49,7 +49,7 @@ export default class UserMiddleware {
     try {
       const { email } = req.body;
       const user = await getUserByEmail(email.trim().toLowerCase());
-      
+
       if (!user) {
         return Response.errorResponse(req, res, {
           status: 409,
@@ -96,34 +96,6 @@ export default class UserMiddleware {
   }
 
   /**
-   * check if user account is active
-   * @static
-   * @param {Request} req - The request from the endpoint.
-   * @param {Response} res - The response returned by the method.
-   * @param {Next} next - The function that calls the next handler.
-   * @returns { JSON } - Returns message
-   */
-  static async validateUserActive(req, res, next) {
-    try {
-      const { user } = req;
-
-      if (!user.is_active) {
-        return Response.errorResponse(req, res, {
-          status: 401,
-          message: apiMessage.ACCOUNT_INACTIVE,
-        });
-      }
-
-      req.user = user;
-
-      return next();
-    } catch (error) {
-      logger.error(error);
-      return error;
-    }
-  }
-
-  /**
    * check if user email is verified
    * @static
    * @param {Request} req - The request from the endpoint.
@@ -131,14 +103,21 @@ export default class UserMiddleware {
    * @param {Next} next - The function that calls the next handler.
    * @returns { JSON } - Returns message
    */
-  static async validateUserEmail(req, res, next) {
+  static async validateUserAccount(req, res, next) {
     try {
       const { user } = req;
 
       if (!user.isemailverified) {
         return Response.errorResponse(req, res, {
-          status: 401,
-          message: "yet to verify email",
+          status: 206,
+          message: "Please check your email inbox to verify your account",
+        });
+      }
+
+      if (!user.is_active) {
+        return Response.errorResponse(req, res, {
+          status: 206,
+          message: "Account deactivated please contact admin.",
         });
       }
 
@@ -193,33 +172,18 @@ export default class UserMiddleware {
 
   static async validateResetPasswordToken(req, res, next) {
     try {
-      const { resetPasswordToken } = req.body;
-      const user = await UserService.fetchPasswordToken(resetPasswordToken);
-      const data = _.pick(user, userDetails);
+      const user = await UserService.fetchUserByPasswordToken(
+        req.params.resetPasswordToken
+      );
 
       if (!user) {
         return Response.errorResponse(req, res, {
-          status: 404,
-          message: apiMessage.RESOURCE_NOT_FOUND("reset password token"),
-        });
-      }
-
-      if (Helper.validateTokenExpiry(user.password_reset_expire)) {
-        return Response.errorResponse(req, res, {
-          status: 401,
-          message: "password reset token expired",
-        });
-      }
-
-      if (user.password_reset_string !== resetPasswordToken) {
-        return Response.errorResponse(req, res, {
           status: 400,
-          message: "reset token error",
+          message: apiMessage.RESOURCE_NOT_FOUND("Expired or invalid token"),
         });
       }
 
-      req.user = data;
-
+      req.user = user;
       return next();
     } catch (error) {
       logger.error(error);
@@ -238,26 +202,18 @@ export default class UserMiddleware {
 
   static async validateEmailVerificationToken(req, res, next) {
     try {
-      const { emailToken } = req.body;
-      const user = await UserService.fetchEmailVerificationToken(emailToken);
+      const user = await UserService.fetchUserByEmailVerificationToken(
+        req.params.emailToken
+      );
 
       if (!user) {
         return Response.errorResponse(req, res, {
-          status: 404,
-          message: "email verification token not found",
+          status: 400,
+          message: "Expired or invalid token",
         });
       }
 
-      const { email, email_verification_expire } = user;
-
-      if (Helper.validateTokenExpiry(email_verification_expire)) {
-        return Response.errorResponse(req, res, {
-          status: 401,
-          message: "email verification token expired",
-        });
-      }
-      req.email = email;
-
+      req.userId = user.id;
       return next();
     } catch (error) {
       logger.error(error);

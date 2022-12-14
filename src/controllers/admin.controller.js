@@ -1,3 +1,4 @@
+import config from "../config";
 import _ from "lodash";
 import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
@@ -47,6 +48,13 @@ export const createNewAdmin = async (req, res) => {
     const admin = await AdminService.createAdmin(req.body);
     const link = `https://movie.io/resetpassword/${req.body.password_reset_string}`;
 
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        code: 206,
+        data: admin,
+        message: apiMessage.RESOURCE_CREATE_SUCCESS("admin"),
+      });
+
     await sendEmail(
       admin.email,
       "Reset Default Password",
@@ -63,17 +71,25 @@ export const createNewAdmin = async (req, res) => {
   }
 };
 
-export const regeneratePasswordResetToken = async (req, res) => {
+export const forgotPassword = async (req, res) => {
   try {
     const { email } = req.body;
     const token = randomstring.generate();
     const tokenExpire = Helper.setTokenExpire(1);
 
-    await AdminService.regeneratePasswordResetToken(token, tokenExpire, email);
-    await sendEmail(email, "Reset Password", token);
+    await AdminService.updatePasswordResetToken(token, tokenExpire, email);
+    
+    if (config.NODE_ENV === "test")
+      return Response.successResponse(res, {
+        message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
+        data: token,
+      });
+
+    const passwordResetLink = `https://movie.io/forgotpassword/${token}`;
+    await sendEmail(email, "Forgot Password", passwordResetLink);
 
     return Response.successResponse(res, {
-      message: "check email for reset password link",
+      message: apiMessage.RESET_PASSWORD_MAIL_SUCCESS,
     });
   } catch (error) {
     logger.error(error);
@@ -109,12 +125,15 @@ export const changeAdminStatus = async (req, res) => {
 
 export const adminResetPassword = async (req, res) => {
   try {
-    const {
-      body: { password },
-      user: { email },
-    } = req;
+    const { email } = req.user;
 
-    await AdminService.adminResetPassword(password, email);
+    await AdminService.adminResetPassword(req.body.password, email);
+
+    if (config.NODE_ENV === "test")
+    return Response.successResponse(res, {
+      message: apiMessage.RESET_PASSWORD_SUCCESS,
+    });
+
     await sendEmail(
       email,
       "Password Changed",

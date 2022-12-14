@@ -37,7 +37,6 @@ export const rateMovie = async (req, res) => {
     await MovieService.rateMovie(movieId, userId, req.body);
 
     return Response.successResponse(res, {
-      code: 200,
       message: apiMessage.RESOURCE_CREATE_SUCCESS("rating"),
     });
   } catch (error) {
@@ -117,7 +116,7 @@ export const editRating = async (req, res) => {
     );
 
     return Response.successResponse(res, {
-      message: apiMessage.RESOURCE_UPDATE_SUCCESS("Review"),
+      message: apiMessage.RESOURCE_UPDATE_SUCCESS("Rating/Review"),
       data: edited,
     });
   } catch (error) {

@@ -49,7 +49,7 @@ export const regenerateEmailVerificationToken = async (req, res) => {
     const token = randomstring.generate();
     const tokenExpire = Helper.setTokenExpire(1);
 
-    await UserService.updateEmailVerificationToken(token, tokenExpire, email);
+    await UserService.updateEmailVerificationToken(token, tokenExpire, req.user.id);
 
     if (config.NODE_ENV === "test")
       return Response.successResponse(res, {
@@ -87,10 +87,10 @@ export const login = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
-    await UserService.verifyEmail(req.email);
+    await UserService.verifyEmail(req.userId);
 
     return Response.successResponse(res, {
-      message: "email verified",
+      message: "email verification successful",
     });
   } catch (error) {
     logger.error(error);
@@ -123,39 +123,11 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-export const regeneratePasswordResetToken = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const token = randomstring.generate();
-    const tokenExpire = Helper.setTokenExpire(1);
-
-    await UserService.updatePasswordResetString(token, tokenExpire, email);
-
-    if (config.NODE_ENV === "test")
-      return Response.successResponse(res, {
-        data: token,
-        message: "check email for reset password link",
-      });
-
-    await sendEmail(email, "Reset Password", token);
-
-    return Response.successResponse(res, {
-      message: "check email for reset password link",
-    });
-  } catch (error) {
-    logger.error(error);
-    return error;
-  }
-};
-
 export const resetPassword = async (req, res) => {
   try {
-    const {
-      body: { password },
-      user: { email },
-    } = req;
+    const { email } = req.user;
 
-    await updatePassword(password, email);
+    await updatePassword(req.body.password, email);
 
     if (config.NODE_ENV === "test")
       return Response.successResponse(res, {

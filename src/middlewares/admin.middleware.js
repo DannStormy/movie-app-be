@@ -1,5 +1,3 @@
-import _ from "lodash";
-import { userDetails } from "../utils/helpers/constants/constants";
 import Helper from "../utils/helpers/helpers";
 import AdminService from "../services/admin.service";
 import MovieService from "../services/movie.service";
@@ -195,10 +193,7 @@ export default class AdminMiddleware {
 
   static async validateResetPasswordToken(req, res, next) {
     try {
-      const { resetPasswordToken } = req.body;
-
-      const admin = await AdminService.fetchPasswordToken(resetPasswordToken);
-      const data = _.pick(admin, userDetails);
+      const admin = await AdminService.fetchPasswordToken(req.params.resetPasswordToken);
 
       if (!admin) {
         return Response.errorResponse(req, res, {
@@ -207,22 +202,7 @@ export default class AdminMiddleware {
         });
       }
 
-      if (Helper.validateTokenExpiry(admin.password_reset_expire)) {
-        return Response.errorResponse(req, res, {
-          status: 401,
-          message: "password reset token expired",
-        });
-      }
-
-      if (admin.password_reset_string !== resetPasswordToken) {
-        return Response.errorResponse(req, res, {
-          status: 400,
-          message: apiMessage.AUTH_REQUIRED,
-        });
-      }
-
-      req.user = data;
-
+      req.user = admin;
       return next();
     } catch (error) {
       logger.error(error);

@@ -9,6 +9,10 @@ import {
   passwordAbsent,
   missingClientEmail,
   missingClientPassword,
+  testClient2,
+  testClient3,
+  clientLogin2,
+  clientLogin3,
 } from "../fixtures/client";
 import { apiMessage } from "../../utils/helpers/constants";
 import app from "../../../index";
@@ -30,6 +34,42 @@ describe("Client Routes", () => {
         );
         process.env.EMAIL = res.body.data.email;
         process.env.EMAIL_VERIFICATION_TOKEN =
+          res.body.data.emailverificationtoken;
+        done(err);
+      });
+  });
+
+  it("should sign up client2 successfully", (done) => {
+    chai
+      .request(app)
+      .post("/user/register")
+      .set("Content-Type", "application/json")
+      .send(testClient2)
+      .end((err, res) => {
+        expect(res.body.status).to.equal("success");
+        expect(res.body.message).to.equal(
+          "account registered, check email for verification link"
+        );
+        process.env.EMAIL_2 = res.body.data.email;
+        process.env.EMAIL_VERIFICATION_TOKEN_2 =
+          res.body.data.emailverificationtoken;
+        done(err);
+      });
+  });
+
+  it("should sign up client3 successfully", (done) => {
+    chai
+      .request(app)
+      .post("/user/register")
+      .set("Content-Type", "application/json")
+      .send(testClient3)
+      .end((err, res) => {
+        expect(res.body.status).to.equal("success");
+        expect(res.body.message).to.equal(
+          "account registered, check email for verification link"
+        );
+        process.env.EMAIL_3 = res.body.data.email;
+        process.env.EMAIL_VERIFICATION_TOKEN_3 =
           res.body.data.emailverificationtoken;
         done(err);
       });
@@ -86,7 +126,7 @@ describe("Client Routes", () => {
   it("should regenerate email verification token", (done) => {
     chai
       .request(app)
-      .put("/user/regenerate-email-token")
+      .post("/user/regenerate-email-token")
       .send({ email: process.env.EMAIL })
       .end((err, res) => {
         expect(res.body.message).to.equal("check email for verification link");
@@ -98,7 +138,7 @@ describe("Client Routes", () => {
   it("should fail to regenerate email verification token", (done) => {
     chai
       .request(app)
-      .put("/user/regenerate-email-token")
+      .post("/user/regenerate-email-token")
       .send({})
       .end((err, res) => {
         expect(res.body.message).to.equal("Email is a required field");
@@ -109,25 +149,32 @@ describe("Client Routes", () => {
   it("should verify client email", (done) => {
     chai
       .request(app)
-      .put("/user/verify-email")
+      .put(`/user/verify-email/${process.env.EMAIL_VERIFICATION_TOKEN}`)
       .set("Content-Type", "application/json")
-      .send({
-        emailToken: process.env.EMAIL_VERIFICATION_TOKEN,
-      })
       .end((err, res) => {
-        expect(res.body.message).to.equal("email verified");
+        expect(res.body.message).to.equal("email verification successful");
         done(err);
       });
   });
 
-  it("should fail to verify client email", (done) => {
+  it("should verify client 2 email", (done) => {
     chai
       .request(app)
-      .put("/user/verify-email")
+      .put(`/user/verify-email/${process.env.EMAIL_VERIFICATION_TOKEN_2}`)
       .set("Content-Type", "application/json")
-      .send({})
       .end((err, res) => {
-        expect(res.body.message).to.equal("Token is a required field");
+        expect(res.body.message).to.equal("email verification successful");
+        done(err);
+      });
+  });
+
+  it("should verify client 3 email", (done) => {
+    chai
+      .request(app)
+      .put(`/user/verify-email/${process.env.EMAIL_VERIFICATION_TOKEN_3}`)
+      .set("Content-Type", "application/json")
+      .end((err, res) => {
+        expect(res.body.message).to.equal("email verification successful");
         done(err);
       });
   });
@@ -141,6 +188,32 @@ describe("Client Routes", () => {
       .end((err, res) => {
         expect(res.body.message).to.equal(apiMessage.LOGIN_USER_SUCCESSFULLY);
         process.env.CLIENT_TOKEN = res.body.data.token;
+        done(err);
+      });
+  });
+
+  it("should login client2", (done) => {
+    chai
+      .request(app)
+      .post("/user/login")
+      .set("Content-Type", "application/json")
+      .send(clientLogin2)
+      .end((err, res) => {
+        expect(res.body.message).to.equal(apiMessage.LOGIN_USER_SUCCESSFULLY);
+        process.env.CLIENT_TOKEN_2 = res.body.data.token;
+        done(err);
+      });
+  });
+
+  it("should login client3", (done) => {
+    chai
+      .request(app)
+      .post("/user/login")
+      .set("Content-Type", "application/json")
+      .send(clientLogin3)
+      .end((err, res) => {
+        expect(res.body.message).to.equal(apiMessage.LOGIN_USER_SUCCESSFULLY);
+        process.env.CLIENT_TOKEN_3 = res.body.data.token;
         done(err);
       });
   });
@@ -172,7 +245,7 @@ describe("Client Routes", () => {
   it("should send reset password mail", (done) => {
     chai
       .request(app)
-      .put("/user/forgotpassword")
+      .post("/user/forgotpassword")
       .send({ email: process.env.EMAIL })
       .end((err, res) => {
         expect(res.body.status).to.equal("success");
@@ -187,51 +260,10 @@ describe("Client Routes", () => {
   it("should not send reset password mail", (done) => {
     chai
       .request(app)
-      .put("/user/forgotpassword")
+      .post("/user/forgotpassword")
       .send({})
       .end((err, res) => {
         expect(res.body.message).to.equal("Email is a required field");
-        done(err);
-      });
-  });
-
-  it("should regenerate password reset token", (done) => {
-    chai
-      .request(app)
-      .put("/user/regenerate-password-token")
-      .send({ email: process.env.EMAIL })
-      .end((err, res) => {
-        expect(res.body.message).to.equal(
-          "check email for reset password link"
-        );
-        process.env.PASSWORD_RESET_TOKEN = res.body.data;
-        done(err);
-      });
-  });
-
-  it("should not regenerate password reset token", (done) => {
-    chai
-      .request(app)
-      .put("/user/regenerate-password-token")
-      .send({})
-      .end((err, res) => {
-        expect(res.body.message).to.equal("Email is a required field");
-        done(err);
-      });
-  });
-
-  it("should not reset client password if reset password token is missing", (done) => {
-    chai
-      .request(app)
-      .put("/user/resetpassword")
-      .set("Content-Type", "application/json")
-      .send({
-        password: "Daniel1",
-      })
-      .end((err, res) => {
-        expect(res.body.message).to.equal(
-          "resetPasswordToken is a required field"
-        );
         done(err);
       });
   });
@@ -239,11 +271,8 @@ describe("Client Routes", () => {
   it("should not reset client password if password is missing", (done) => {
     chai
       .request(app)
-      .put("/user/resetpassword")
+      .put(`/user/resetpassword/${process.env.PASSWORD_RESET_TOKEN}`)
       .set("Content-Type", "application/json")
-      .send({
-        resetPasswordToken: process.env.PASSWORD_RESET_TOKEN,
-      })
       .end((err, res) => {
         expect(res.body.message).to.equal("Password field is required");
         done(err);
@@ -253,14 +282,47 @@ describe("Client Routes", () => {
   it("should reset client password", (done) => {
     chai
       .request(app)
-      .put("/user/resetpassword")
+      .put(`/user/resetpassword/${process.env.PASSWORD_RESET_TOKEN}`)
       .set("Content-Type", "application/json")
-      .send({
-        password: "Daniel1",
-        resetPasswordToken: process.env.PASSWORD_RESET_TOKEN,
-      })
+      .send({ password: "Daniel1" })
       .end((err, res) => {
         expect(res.body.message).to.equal(apiMessage.RESET_PASSWORD_SUCCESS);
+        done(err);
+      });
+  });
+
+  it("should not deactivate user account if status value is missing", (done) => {
+    chai
+      .request(app)
+      .put(`/admin/accounts/user/${1}/toggle-status`)
+      .set({ Authorization: process.env.SUPER_ADMIN_TOKEN })
+      .send({})
+      .end((err, res) => {
+        expect(res.body.message).to.equal('"status" is required');
+        done(err);
+      });
+  });
+
+  it("should deactivate user account", (done) => {
+    chai
+      .request(app)
+      .put(`/admin/accounts/user/${1}/toggle-status`)
+      .set({ Authorization: process.env.SUPER_ADMIN_TOKEN })
+      .send({status: false})
+      .end((err, res) => {
+        expect(res.body.message).to.equal("user status updated successfully");
+        done(err);
+      });
+  });
+
+  it("should activate user account", (done) => {
+    chai
+      .request(app)
+      .put(`/admin/accounts/user/${1}/toggle-status`)
+      .set({ Authorization: process.env.SUPER_ADMIN_TOKEN })
+      .send({status: true})
+      .end((err, res) => {
+        expect(res.body.message).to.equal("user status updated successfully");
         done(err);
       });
   });

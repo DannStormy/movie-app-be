@@ -10,8 +10,8 @@ export default {
       WHERE email = $1
     `,
   checkClientStatus: `
-      SELECT status
-      FROM client_account_status
+      SELECT is_active
+      FROM users
       WHERE id = $1
     `,
   updatePasswordResetString: `
@@ -20,13 +20,14 @@ export default {
       password_reset_expire = $2,
       updated_at = NOW()
       WHERE email = $3
+      AND is_active = true;
 `,
   updateEmailVerificationToken: `
       UPDATE users
       SET emailVerificationToken = $1,
       email_verification_expire = $2,
       updated_at = NOW()
-      WHERE email = $3
+      WHERE id = $3
   `,
   updatePassword: `
       UPDATE users
@@ -40,17 +41,19 @@ export default {
       UPDATE users
       SET isEmailVerified = true,
       updated_at = NOW()
-      WHERE email = $1
+      WHERE id = $1
   `,
-  fetchPasswordToken: `
-      SELECT password_reset_string, email, password_reset_expire
+  fetchUserByPasswordToken: `
+      SELECT password_reset_string, email
       FROM users
-      WHERE password_reset_string = $1;
+      WHERE password_reset_string = $1
+      AND password_reset_expire::timestamp > NOW()
   `,
-  fetchEmailVerificationToken: `
-      SELECT emailverificationtoken, email, email_verification_expire
+  fetchUserByEmailVerificationToken: `
+      SELECT id,emailverificationtoken, email
       FROM users
-      WHERE emailverificationtoken = $1;
+      WHERE emailverificationtoken = $1
+      AND email_verification_expire::timestamp > NOW()
   `,
   fetchUserRole: `
       SELECT role_id 

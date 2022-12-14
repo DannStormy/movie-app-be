@@ -1,13 +1,5 @@
 import { Router } from "express";
-import {
-  register,
-  verifyEmail,
-  login,
-  forgotPassword,
-  resetPassword,
-  regenerateEmailVerificationToken,
-  regeneratePasswordResetToken,
-} from "../controllers/user.controller.js";
+import * as userControllers from "../controllers/user.controller.js";
 import UserMiddleware from "../middlewares/user.middleware.js";
 import AuthMiddleware from "../middlewares/auth.middleware";
 import schema from "../validations/schema.js";
@@ -15,35 +7,25 @@ import schema from "../validations/schema.js";
 const router = Router();
 
 const { validate } = AuthMiddleware;
-const { emailExists, validateResetPasswordToken, emailDoesNotExist } =
-  UserMiddleware;
 
 router.post(
   "/register",
   validate(schema.registerSchema),
-  emailExists,
-  register
+  UserMiddleware.emailExists,
+  userControllers.register
 );
 
 router.put(
-  "/verify-email",
-  validate(schema.checkEmailToken),
+  "/verify-email/:emailToken",
   UserMiddleware.validateEmailVerificationToken,
-  verifyEmail
+  userControllers.verifyEmail
 );
 
-router.put(
+router.post(
   "/regenerate-email-token",
   validate(schema.checkEmailSchema),
   UserMiddleware.emailDoesNotExist,
-  regenerateEmailVerificationToken
-);
-
-router.put(
-  "/regenerate-password-token",
-  validate(schema.checkEmailSchema),
-  UserMiddleware.emailDoesNotExist,
-  regeneratePasswordResetToken
+  userControllers.regenerateEmailVerificationToken
 );
 
 router.post(
@@ -51,25 +33,24 @@ router.post(
   validate(schema.loginSchema),
   [
     UserMiddleware.emailDoesNotExist,
-    UserMiddleware.validateUserActive,
-    UserMiddleware.validateUserEmail,
+    UserMiddleware.validateUserAccount,
     UserMiddleware.validateUserPassword,
   ],
-  login
+  userControllers.login
 );
 
-router.put(
+router.post(
   "/forgotpassword",
   validate(schema.checkEmailSchema),
-  emailDoesNotExist,
-  forgotPassword
+  UserMiddleware.emailDoesNotExist,
+  userControllers.forgotPassword
 );
 
 router.put(
-  "/resetpassword",
+  "/resetpassword/:resetPasswordToken",
   validate(schema.passwordReset),
-  validateResetPasswordToken,
-  resetPassword
+  UserMiddleware.validateResetPasswordToken,
+  userControllers.resetPassword
 );
 
 export default router;

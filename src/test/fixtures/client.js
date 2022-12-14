@@ -7,6 +7,20 @@ export const testClient = {
   password: "Client1234",
 };
 
+export const testClient2 = {
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName(),
+  email: faker.internet.email(),
+  password: "Client5467",
+};
+
+export const testClient3 = {
+  firstName: faker.name.firstName(),
+  lastName: faker.name.lastName(),
+  email: faker.internet.email(),
+  password: "Client3749",
+};
+
 export const firstNameAbsent = {
   lastName: faker.name.lastName(),
   email: faker.internet.email(),
@@ -34,6 +48,16 @@ export const passwordAbsent = {
 export const clientLogin = {
   email: testClient.email,
   password: "Client1234",
+};
+
+export const clientLogin2 = {
+  email: testClient2.email,
+  password: "Client5467",
+};
+
+export const clientLogin3 = {
+  email: testClient3.email,
+  password: "Client3749",
 };
 
 export const missingClientEmail = {

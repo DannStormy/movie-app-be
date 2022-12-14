@@ -68,11 +68,11 @@ export default class UserService {
    *  set email verification token
    * @memberof UserService
    */
-  static async updateEmailVerificationToken(token, token_expire, email) {
+  static async updateEmailVerificationToken(token, token_expire, userId) {
     return db.none(user_queries.updateEmailVerificationToken, [
       token,
       token_expire,
-      email,
+      userId,
     ]);
   }
 
@@ -80,8 +80,8 @@ export default class UserService {
    *  set user email verified status
    * @memberof UserService
    */
-  static async updateIsEmailVerified(email) {
-    return db.none(user_queries.updateIsEmailVerified, [email]);
+  static async updateIsEmailVerified(userId) {
+    return db.none(user_queries.updateIsEmailVerified, [userId]);
   }
 
   /**
@@ -100,26 +100,26 @@ export default class UserService {
    *  fetch password reset token
    * @memberof UserService
    */
-  static async fetchPasswordToken(token) {
-    return db.oneOrNone(user_queries.fetchPasswordToken, [token]);
+  static async fetchUserByPasswordToken(token) {
+    return db.oneOrNone(user_queries.fetchUserByPasswordToken, [token]);
   }
 
   /**
    *  fetch email verification token
    * @memberof UserService
    */
-  static async fetchEmailVerificationToken(token) {
-    return db.oneOrNone(user_queries.fetchEmailVerificationToken, [token]);
+  static async fetchUserByEmailVerificationToken(token) {
+    return db.oneOrNone(user_queries.fetchUserByEmailVerificationToken, [token]);
   }
 
   /**
    *  verify email
    * @memberof UserService
    */
-  static async verifyEmail(email) {
+  static async verifyEmail(userId) {
     return Promise.all([
-      UserService.updateEmailVerificationToken(null, null, email),
-      UserService.updateIsEmailVerified(email),
+      UserService.updateEmailVerificationToken(null, null, userId),
+      UserService.updateIsEmailVerified(userId),
     ]);
   }
 }

@@ -27,8 +27,7 @@ export default {
   }),
 
   passwordReset: Joi.object({
-    password: passwordCheck(),
-    resetPasswordToken: stringCheck("resetPasswordToken"),
+    password: passwordCheck()
   }),
 
   loginSchema: Joi.object({
@@ -45,11 +44,11 @@ export default {
   addMovieSchema: Joi.object({
     title: stringCheck("title"),
     genre: stringCheck("genre"),
-    year: numberCheck(),
+    year: numberCheck('year'),
   }),
 
   changeStatusSchema: Joi.object({
-    status: Joi.boolean(),
+    status: Joi.boolean().required(),
   }),
 
   editTitleSchema: Joi.object({
