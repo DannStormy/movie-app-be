@@ -1,6 +1,5 @@
 import Joi from "joi";
-
-import ValidationHelper from "../utils/helpers/validations";
+import ValidationHelper from "./validations";
 
 const {
   emailCheck,

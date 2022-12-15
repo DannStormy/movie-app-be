@@ -1,5 +1,5 @@
 import MovieService from "../services/movie.service";
-import { Response, apiMessage } from "../utils/helpers/constants";
+import { Response, apiMessage } from "../utils/constants";
 
 export const fetchMovies = async (req, res) => {
   try {

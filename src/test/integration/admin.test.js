@@ -1,12 +1,8 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
-import { apiMessage } from "../../utils/helpers/constants";
-import app from "../../../index";
-import {
-  createTestAdmin,
-  superAdminLogin,
-  testAdminLogin,
-} from "../fixtures/admin";
+import { apiMessage } from "../../utils/constants";
+import { createTestAdmin, superAdminLogin } from "../fixtures/admin";
+import app from "../../..";
 
 const { expect } = chai;
 chai.use(chaiHttp);
@@ -141,7 +137,7 @@ describe("Admin Routes", () => {
       .request(app)
       .put(`/admin/accounts/${2}/toggle-status`)
       .set({ Authorization: process.env.SUPER_ADMIN_TOKEN })
-      .send({status: false})
+      .send({ status: false })
       .end((err, res) => {
         expect(res.body.message).to.equal("admin status updated successfully");
         done(err);
@@ -153,7 +149,7 @@ describe("Admin Routes", () => {
       .request(app)
       .put(`/admin/accounts/${2}/toggle-status`)
       .set({ Authorization: process.env.SUPER_ADMIN_TOKEN })
-      .send({status: true})
+      .send({ status: true })
       .end((err, res) => {
         expect(res.body.message).to.equal("admin status updated successfully");
         done(err);

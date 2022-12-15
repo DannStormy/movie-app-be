@@ -3,7 +3,7 @@ import * as adminControllers from "../controllers/admin.controller.js";
 import AccessControlMiddleware from "../middlewares/accessControl";
 import AdminMiddleware from "../middlewares/admin.middleware";
 import AuthMiddleware from "../middlewares/auth.middleware";
-import schema from "../validations/schema.js";
+import schema from "../utils/validations/schema.js";
 
 const router = Router();
 const { isSuper } = AccessControlMiddleware;

@@ -4,7 +4,7 @@ import AccessControlMiddleware from "../middlewares/accessControl";
 import AdminMiddleware from "../middlewares/admin.middleware";
 import AuthMiddleware from "../middlewares/auth.middleware";
 import UserMiddleware from "../middlewares/user.middleware";
-import schema from "../validations/schema.js";
+import schema from "../utils/validations/schema.js";
 
 const { isAdmin, isUser, isSuper } = AccessControlMiddleware;
 const { validate, authenticate } = AuthMiddleware;

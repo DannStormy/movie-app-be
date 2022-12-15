@@ -1,8 +1,6 @@
-import _ from "lodash";
-import { userDetails } from "../utils/helpers/constants/constants";
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
-import { Response, apiMessage } from "../utils/helpers/constants";
+import { Response, apiMessage } from "../utils/constants";
 import MovieService from "../services/movie.service";
 
 const { getUserByEmail } = UserService;

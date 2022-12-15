@@ -3,9 +3,9 @@ import _ from "lodash";
 import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
 import AdminService from "../services/admin.service";
-import { Response, apiMessage } from "../utils/helpers/constants";
-import sendEmail from "../utils/helpers/mailer/mailer";
-import { userDetails } from "../utils/helpers/constants/constants";
+import { Response, apiMessage } from "../utils/constants";
+import sendEmail from "../utils/mailer/mailer";
+import { userDetails } from "../utils/constants/constants";
 
 const { generateJWT } = Helper;
 

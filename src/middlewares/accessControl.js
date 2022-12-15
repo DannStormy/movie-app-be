@@ -1,4 +1,4 @@
-import { Response, apiMessage } from "../utils/helpers/constants";
+import { Response, apiMessage } from "../utils/constants";
 /**
  * A collection of middleware methods used for access control
  * of requests through protected routes.

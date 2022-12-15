@@ -14,7 +14,7 @@ import {
   clientLogin2,
   clientLogin3,
 } from "../fixtures/client";
-import { apiMessage } from "../../utils/helpers/constants";
+import { apiMessage } from "../../utils/constants";
 import app from "../../../index";
 
 const { expect } = chai;

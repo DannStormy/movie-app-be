@@ -135,10 +135,8 @@ export default class Helper {
    * set expiry time for tokens.
    * @static
    * @private
-   * @param {object} error - The API error object.
-   * @param {Request} req - Request object.
    * @memberof Helpers
-   * @returns {String} - It returns null.
+   * @returns {String} - It returns time string value.
    */
   static setTokenExpire(minutes) {
     const expiresIn = new Date().getTime() + minutes * 60 * 1000;

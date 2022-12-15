@@ -1,11 +1,11 @@
 import _ from "lodash";
 import config from "../config";
-import { userDetails } from "../utils/helpers/constants/constants";
+import { userDetails } from "../utils/constants/constants";
 import randomstring from "randomstring";
 import Helper from "../utils/helpers/helpers";
 import UserService from "../services/user.service";
-import sendEmail from "../utils/helpers/mailer/mailer";
-import { Response, apiMessage } from "../utils/helpers/constants";
+import sendEmail from "../utils/mailer/mailer";
+import { Response, apiMessage } from "../utils/constants";
 
 const { addUser, updatePassword } = UserService;
 const { generateJWT } = Helper;

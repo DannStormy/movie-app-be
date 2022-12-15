@@ -1,7 +1,7 @@
 import Helper from "../utils/helpers/helpers";
 import AdminService from "../services/admin.service";
 import MovieService from "../services/movie.service";
-import { Response, apiMessage } from "../utils/helpers/constants";
+import { Response, apiMessage } from "../utils/constants";
 
 export default class AdminMiddleware {
   /**
@@ -54,7 +54,7 @@ export default class AdminMiddleware {
       if (!passwordMatch) {
         return Response.errorResponse(req, res, {
           status: 400,
-          message: apiMessage.PASSWORD_INCORRECT,
+          message: apiMessage.INVALID_CREDENTIALS,
         });
       }
 

@@ -1,6 +1,6 @@
 import config from "../config";
 import Helper from "../utils/helpers/helpers";
-import { Response, apiMessage } from "../utils/helpers/constants";
+import { Response, apiMessage } from "../utils/constants";
 
 export default class AuthMiddleware {
   /**

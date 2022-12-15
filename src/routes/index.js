@@ -2,7 +2,7 @@ import { Router } from "express";
 import userRouter from "./user.route";
 import movieRouter from "./movie.route";
 import adminRouter from "./admin.route";
-import { Response, apiMessage } from "../utils/helpers/constants";
+import { Response, apiMessage } from "../utils/constants";
 
 const router = Router();
 

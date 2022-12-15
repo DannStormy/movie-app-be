@@ -1,5 +1,5 @@
 import apiMessage from "./api.message";
-import Helper from "../helpers";
+import Helper from "../helpers/helpers";
 
 export default class Response {
   /**

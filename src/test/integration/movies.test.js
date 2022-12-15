@@ -1,6 +1,6 @@
 import chai from "chai";
 import chaiHttp from "chai-http";
-import { apiMessage } from "../../utils/helpers/constants";
+import { apiMessage } from "../../utils/constants";
 import app from "../../../index";
 import {
   missingGenre,
