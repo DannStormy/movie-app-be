@@ -52,7 +52,6 @@ describe("Basic Utility Functions", () => {
 
   it("should return datetime value", () => {
     const expiresIn = Helper.setTokenExpire(2);
-    console.log(typeof expiresIn)
-    expect(expiresIn).to.be.an('object');
+    expect(expiresIn).to.be.a("Date");
   });
 });
