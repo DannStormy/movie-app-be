@@ -9,7 +9,7 @@
     "prestart": "npm run && rimraf build && babel-node . --out-dir build",
     "start": "babel-node index.js",
     "dev": "nodemon --exec babel-node index.js",
-    "build": "rimraf build && babel src --out-dir build",
+    "build": "rimraf build && babel src --out-dir build && npm run migrate:up && npm run seed:up",
     "migrate": "db-migrate --migrations-dir ./migrations",
     "migrate:up": "npm run migrate up",
     "migrate:down": "npm run migrate down",
