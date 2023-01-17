@@ -6,6 +6,7 @@
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha --require @babel/register src/test/**/ --timeout 120000 --exit",
     "pretest": "cross-env NODE_ENV=test npm run migrate:reset:test && cross-env NODE_ENV=test npm run migrate:up:test && cross-env NODE_ENV=test npm run seed:reset:test && cross-env NODE_ENV=test npm run seed:up:test",
+    "prestart": "npm run migrate:up && npm run seed:up",
     "start": "babel-node index.js",
     "dev": "nodemon --exec babel-node index.js",
     "migrate": "db-migrate --migrations-dir ./migrations",
