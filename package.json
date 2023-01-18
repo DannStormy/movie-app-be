@@ -35,6 +35,8 @@
     "chai": "^4.3.7",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
+    "db-migrate": "^0.11.13",
+    "db-migrate-pg": "^1.2.2",
     "esm": "^3.2.25",
     "express": "^4.18.2",
     "helmet": "^6.0.1",
