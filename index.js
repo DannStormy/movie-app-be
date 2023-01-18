@@ -11,6 +11,12 @@ const app = express();
 const port = config.PORT || 1000;
 
 global.logger = logger;
+
+// Welcome route
+app.get("/", (_req, res) => {
+  res.send({ message: "Welcome to Movie Library" });
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(helmet());
